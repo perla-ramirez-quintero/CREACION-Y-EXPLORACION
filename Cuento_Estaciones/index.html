@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>El Cuento de las Estaciones</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <!-- Navegación superior -->
+        <div class="top-bar">
+            <button id="btn-read" class="btn btn-primary">🔊 Leer historia</button>
+        </div>
+
+        <!-- El contenedor de partículas (nieve o viento) -->
+        <div id="particles-container"></div>
+
+        <!-- Páginas -->
+        <div class="pages-wrapper">
+
+            <!-- Portada -->
+            <div class="page active" id="page-0" data-theme="cover" data-text="¡Hola! Vamos a viajar por el año y conocer las estaciones. Toca el botón de Empezar Aventura.">
+                <h1 class="title bounce">El Viaje de las Estaciones</h1>
+                <div class="character-container">
+                    <div class="main-character pulse interactive" data-speech="¡Hola! Soy el Osito Bimbo. ¿Jugamos?">🐻</div>
+                </div>
+                <p class="story-text">¡Hola! Vamos a viajar por el año y conocer las estaciones. Toca el botón de "Empezar" para comenzar.</p>
+                <button class="btn btn-action bounce" id="btn-start">🚀 Empezar Aventura</button>
+            </div>
+
+            <!-- Primavera -->
+            <div class="page hidden" id="page-1" data-theme="spring" data-text="En la primavera nacen las plantas y todo es de colores. ¡Toca las semillitas en el suelo para verlas florecer!">
+                <h2 class="title txt-spring bounce">Llegó la Primavera</h2>
+                <div class="scene">
+                    <div class="interactive sun float" data-speech="¡Siento los ricos rayos del sol!">☀️</div>
+                    <div class="tree">
+                        <div class="trunk"></div>
+                        <div class="leaves foliage-spring"></div>
+                    </div>
+                    <div class="interactive flower f1 pulse" data-speech="¡Agüita fresca!" data-action="grow">🌱</div>
+                    <div class="interactive flower f2 pulse" data-speech="¡Ya quiero florecer!" data-action="grow">🌱</div>
+                    <div class="interactive butterfly float" data-speech="¡Qué ricas flores!">🦋</div>
+                </div>
+                <div class="text-box">
+                    <p class="story-text">En la primavera nacen las plantas y la naturaleza se llena de colores. ¡Ayuda a las semillitas tocándolas para verlas florecer!</p>
+                </div>
+            </div>
+
+            <!-- Verano -->
+            <div class="page hidden" id="page-2" data-theme="summer" data-text="En el verano hace mucho calor. Los árboles dan frutos deliciosos. ¡Toca las manzanas para recogerlas!">
+                <h2 class="title txt-summer bounce">Llegó el Verano</h2>
+                <div class="scene">
+                    <div class="interactive sun-hot spin" data-speech="¡Uff, necesito lentes de sol!">🌞</div>
+                    <div class="tree">
+                        <div class="trunk"></div>
+                        <div class="leaves foliage-summer">
+                            <div class="interactive apple a1 pulse" data-speech="¡Soy súper dulce!" data-action="eat">🍎</div>
+                            <div class="interactive apple a2 pulse" data-speech="¡Prepárame en un jugo!" data-action="eat">🍎</div>
+                            <div class="interactive apple a3 pulse" data-speech="¡Aquí arriba estoy!" data-action="eat">🍎</div>
+                        </div>
+                    </div>
+                    <div class="interactive bee fly" data-speech="¡Bzzzzzzz, miel!">🐝</div>
+                </div>
+                <div class="text-box">
+                    <p class="story-text">En el verano hace mucho calor y vamos al agua. Los árboles nos dan ricas frutas. ¡Toca las manzanas del árbol para recogerlas!</p>
+                </div>
+            </div>
+
+            <!-- Otoño -->
+            <div class="page hidden" id="page-3" data-theme="autumn" data-text="Llegó el otoño y el viento sopla fuerte. Las hojitas cambian de color naranja y caen al suelo. ¡Toca el árbol para tirar sus hojitas!">
+                <h2 class="title txt-autumn bounce">Llegó el Otoño</h2>
+                <div class="scene">
+                    <div class="interactive cloud-wind float" data-speech="¡Fiuuuuuuuuu! Soy el viento otoñal.">💨</div>
+                    <div class="tree">
+                        <div class="trunk"></div>
+                        <div id="hojas-otono" class="leaves foliage-autumn interactive" data-speech="¡Wiiiiiii, aterrizaje!" data-action="shake-drop"></div>
+                    </div>
+                    <div class="interactive squirrel jump" data-speech="¡A juntar bellotas para el frío!">🐿️</div>
+                </div>
+                <div class="text-box">
+                    <p class="story-text">Llegó el otoño. El viento sopla tan fuerte que las hojas de los árboles se vuelven naranjas y caen. ¡Toca la copa del árbol para bajar las hojas!</p>
+                </div>
+            </div>
+
+            <!-- Invierno -->
+            <div class="page hidden" id="page-4" data-theme="winter" data-text="Finalmente llega el invierno. Todo se cubre de nieve y hace mucho frío. ¡Brrrr! Toca al muñeco de nieve para que baile.">
+                <h2 class="title txt-winter bounce">Llegó el Invierno</h2>
+                <div class="scene">
+                    <div class="interactive cloud-snow float" data-speech="¡Blanca nieve para todos!">🌨️</div>
+                    <div class="tree tree-winter">
+                        <div class="trunk"></div>
+                        <div class="leaves foliage-winter"></div>
+                    </div>
+                    <div class="interactive snowman pulse" data-speech="¡Soy de nieve pero mi corazón es calientito!" data-action="spin">⛄</div>
+                </div>
+                <div class="text-box">
+                    <p class="story-text">Por fin es invierno. La nieve cubre todo y debemos abrigarnos bien. ¡Toca al muñeco de nieve para verlo girar de la emoción!</p>
+                </div>
+            </div>
+
+            <!-- Final -->
+            <div class="page hidden" id="page-5" data-theme="end" data-text="¡Fin del Viaje! Pasamos por las 4 estaciones. ¡Lo hiciste genial!">
+                <h1 class="title bounce text-gradient">¡Gran Trabajo!</h1>
+                <div class="character-container">
+                    <div class="main-character pulse interactive" data-speech="¡Me encantó viajar por el año contigo!">🐻</div>
+                    <div class="interactive trophy float" data-speech="¡Eres la mejor amiga de la naturaleza!">🏆</div>
+                </div>
+                <div class="text-box">
+                    <p class="story-text">Conocimos la Primavera, el Verano, el Otoño y el Invierno. ¿Cuál fue tu estación favorita?</p>
+                </div>
+                <button class="btn btn-action bounce" onclick="location.reload()">🔁 Jugar de Nuevo</button>
+            </div>
+
+        </div>
+
+        <!-- Navegación inferior -->
+        <div class="bottom-bar">
+            <button id="btn-prev" class="btn btn-nav hidden">⬅️ Atrás</button>
+            <div id="page-indicator" class="indicator hidden">Portada</div>
+            <button id="btn-next" class="btn btn-nav hidden">Adelante ➡️</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

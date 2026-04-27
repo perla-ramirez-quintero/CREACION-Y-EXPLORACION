@@ -1,0 +1,230 @@
+/* Fuentes Divertidas */
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* Previene scroll no deseado */
+    font-family: 'Nunito', sans-serif;
+    background-color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    touch-action: manipulation; /* Importante para tablets/moviles */
+}
+
+/* Contenedor del juego - Aspecto de "tableta" mágica */
+#game-container {
+    width: 100vw; /* Pantalla completa en el movil/tableta */
+    height: 100vh;
+    max-width: 1024px;
+    max-height: 768px; /* Tamaño máximo para escritorio */
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+    transition: background 1.5s ease-in-out; 
+    display: flex;
+    flex-direction: column;
+}
+
+@media (min-width: 1024px) {
+    #game-container {
+        border-radius: 40px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        border: 10px solid white;
+    }
+}
+
+/* Temas de fondo para cada estación */
+#game-container[data-current-theme="cover"] { background: linear-gradient(135deg, #8A2387, #E94057, #F27121); }
+#game-container[data-current-theme="spring"] { background: linear-gradient(to bottom, #a1c4fd 0%, #c2e9fb 100%); }
+#game-container[data-current-theme="summer"] { background: linear-gradient(to bottom, #4facfe 0%, #00f2fe 100%); }
+#game-container[data-current-theme="autumn"] { background: linear-gradient(to bottom, #f6d365 0%, #fda085 100%); }
+#game-container[data-current-theme="winter"] { background: linear-gradient(to bottom, #e0c3fc 0%, #8ec5fc 100%); }
+#game-container[data-current-theme="end"] { background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); }
+
+
+/* --- NAVEGACIÓN Y BOTONES --- */
+.top-bar {
+    position: absolute; top: 20px; right: 20px; z-index: 50;
+}
+.bottom-bar {
+    position: absolute; bottom: 20px; width: calc(100% - 40px);
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0 20px; z-index: 50;
+}
+.btn {
+    border: none;
+    border-radius: 50px;
+    padding: 15px 25px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.2rem;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+    transition: transform 0.2s, box-shadow 0.2s;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+.btn:hover, .btn:active {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 12px 20px rgba(0,0,0,0.3);
+}
+.btn-primary { background: #FF9A9E; border: 3px solid #FF758C; }
+.btn-nav { background: #4FACFE; border: 3px solid #00F2FE; }
+.btn-action { background: #FEC163; border: 3px solid #DE4313; font-size: 1.5rem; padding: 20px 40px; margin-top: 20px; }
+
+.indicator {
+    background: rgba(255,255,255,0.7);
+    padding: 10px 20px; border-radius: 20px;
+    font-family: 'Fredoka One', cursive; color: #333;
+}
+.hidden { display: none !important; opacity: 0; pointer-events: none; }
+
+
+/* --- PÁGINAS --- */
+.pages-wrapper {
+    flex-grow: 1; position: relative; width: 100%; height: 100%;
+}
+.page {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    opacity: 0; visibility: hidden;
+    transition: opacity 0.8s ease-in-out;
+    z-index: 10;
+}
+.page.active {
+    opacity: 1; visibility: visible; z-index: 20;
+}
+
+/* Textos */
+.title {
+    font-family: 'Fredoka One', cursive; font-size: 3.5rem;
+    color: white; margin: 10px 0; text-shadow: 3px 3px 0 #333, -1px -1px 0 #333;
+    text-align: center;
+}
+.txt-spring { color: #81FBB8; }
+.txt-summer { color: #FFD200; }
+.txt-autumn { color: #FF7E5F; }
+.txt-winter { color: #8EC5FC; text-shadow: 2px 2px 5px blue; }
+.text-gradient { background: -webkit-linear-gradient(#fbc2eb, #a6c1ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: none; }
+
+.text-box {
+    background: rgba(255, 255, 255, 0.85);
+    padding: 15px 30px; border-radius: 30px; margin-top: 20px;
+    max-width: 80%; border: 4px dashed #FF9A9E;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+.story-text {
+    font-size: 1.5rem; color: #444; font-weight: 700;
+    margin: 0; text-align: center; line-height: 1.4;
+}
+
+/* Personaje */
+.main-character {
+    font-size: 8rem; margin: 20px; filter: drop-shadow(0px 10px 5px rgba(0,0,0,0.3));
+}
+.trophy { font-size: 6rem; margin: 20px; filter: drop-shadow(0px 10px 5px rgba(0,0,0,0.3)); }
+
+
+/* --- ESCENAS Y ÁRBOL --- */
+.scene {
+    position: relative; width: 100%; height: 50vh;
+    display: flex; justify-content: center; align-items: flex-end;
+}
+.tree {
+    position: relative; width: 150px; height: 300px;
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-end; margin-bottom: 20px;
+}
+.trunk {
+    width: 40px; height: 120px; background: linear-gradient(to right, #6b4226, #8b5a2b);
+    border-radius: 5px 5px 0 0; position: relative;
+    box-shadow: inset -5px 0 10px rgba(0,0,0,0.3);
+}
+.tree-winter .trunk {
+    background: linear-gradient(to right, #6b4226, #8b5a2b); border-right: 5px solid white; /* Nieve en tronco */
+}
+.leaves {
+    width: 200px; height: 200px; position: absolute; top: -50px;
+    border-radius: 50%; box-shadow: 0 15px 20px rgba(0,0,0,0.2);
+    transition: all 1s ease;
+}
+.foliage-spring { background: linear-gradient(to bottom, #d4fc79 0%, #96e6a1 100%); border: 5px solid #71b87d; }
+.foliage-summer { background: linear-gradient(to bottom, #43e97b 0%, #38f9d7 100%); border: 5px solid #28a745; width:220px; height:220px; top:-70px; }
+.foliage-autumn { background: linear-gradient(to bottom, #fa709a 0%, #fee140 100%); border: 5px solid #d35400; }
+.foliage-autumn.dropped { opacity: 0; transform: translateY(150px) scale(0.8); } /* Arbol se queda calvo */
+.foliage-winter { background: linear-gradient(to bottom, #e0c3fc 0%, white 100%); border: 5px solid #c2e9fb; width: 160px; height: 160px; top: -10px;}
+
+/* Elementos de Escena */
+.interactive {
+    cursor: pointer; cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="%23ff9a9e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle></svg>') 16 16, pointer;
+    transition: transform 0.2s; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.3));
+}
+.interactive:hover { transform: scale(1.15) !important; filter: drop-shadow(0 10px 10px rgba(0,0,0,0.5)); }
+.interactive:active { transform: scale(0.9) !important; }
+
+/* Posicionamiento específico */
+.sun { font-size: 6rem; position: absolute; top: 10px; right: 40px; }
+.sun-hot { font-size: 7rem; position: absolute; top: -10px; left: 30px; }
+.cloud-wind { font-size: 5rem; position: absolute; top: 30px; left: 50px; }
+.cloud-snow { font-size: 6rem; position: absolute; top: 20px; right: 50px; }
+
+.flower { font-size: 3rem; position: absolute; bottom: 0; transition: transform 0.5s, font-size 0.5s; }
+.f1 { left: 20%; }
+.f2 { right: 20%; }
+.flower.grown { font-size: 6rem !important; } /* Cuando crece */
+
+.apple { font-size: 3rem; position: absolute; }
+.a1 { top: 30px; left: 40px; }
+.a2 { top: 80px; right: 30px; }
+.a3 { top: 120px; left: 80px; }
+.apple.eaten { opacity: 0; transform: scale(0); pointer-events: none; }
+
+.butterfly { font-size: 3rem; position: absolute; bottom: 80px; left: 30%; }
+.bee { font-size: 2.5rem; position: absolute; top: 150px; right: 10%; }
+.squirrel { font-size: 4rem; position: absolute; bottom: 10px; right: 30%; }
+.snowman { font-size: 7rem; position: absolute; bottom: 10px; left: 20%; }
+
+/* --- ANIMACIONES DIVERTIDAS --- */
+@keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-20px);} 60% {transform: translateY(-10px);} }
+.bounce { animation: bounce 2s infinite; }
+
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+.pulse { animation: pulse 2s infinite ease-in-out; }
+
+@keyframes float { 0% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-15px) rotate(5deg); } 100% { transform: translateY(0px) rotate(0deg); } }
+.float { animation: float 4s infinite ease-in-out; }
+
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+.spin { animation: spin 10s infinite linear; }
+
+@keyframes spin-fast { 0% { transform: rotate(0deg) scale(1.2); } 100% { transform: rotate(360deg) scale(1.2); } }
+.spin-action { animation: spin-fast 1s ease-in-out !important; }
+
+@keyframes fly { 0% { transform: translate(0,0); } 33% { transform: translate(-30px, -20px); } 66% { transform: translate(-10px, 20px); } 100% { transform: translate(0,0); } }
+.fly { animation: fly 5s infinite; }
+
+@keyframes jump { 0% { transform: translateY(0); } 50% { transform: translateY(-30px); } 100% { transform: translateY(0); } }
+.jump { animation: jump 1.5s infinite; }
+
+@keyframes shake { 0% { transform: rotate(0deg); } 25% { transform: rotate(10deg); } 50% { transform: rotate(0deg); } 75% { transform: rotate(-10deg); } 100% { transform: rotate(0deg); } }
+.shake { animation: shake 0.5s ease-in-out; }
+
+/* Contenedor de partículas dinámicas */
+#particles-container {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 15;
+}
+.particle {
+    position: absolute; top: -50px; font-size: 1.5rem;
+    animation: fall linear forwards;
+    filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2));
+}
+@keyframes fall {
+    to { transform: translateY(120vh) rotate(360deg); }
+}
+
+/* Responsividad extra */
+@media (max-width: 600px) {
+    .title { font-size: 2.5rem; }
+    .story-text { font-size: 1.2rem; }
+    .btn { padding: 10px 15px; font-size: 1rem; }
+    .scene { height: 40vh; transform: scale(0.85); transform-origin: bottom center; }
+}
