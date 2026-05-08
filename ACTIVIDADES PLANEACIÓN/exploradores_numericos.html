@@ -27,11 +27,15 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        html, body {
+            height: 100%;
+            overscroll-behavior-y: none;
+        }
+
         body {
             font-family: 'Nunito', sans-serif;
             background: linear-gradient(135deg, #1A535C 0%, #4ECDC4 100%);
             color: var(--text-light);
-            min-height: 100vh;
             display: flex;
             flex-direction: column;
             overflow: hidden; /* Prevent scrolling for app-like feel */
@@ -427,9 +431,9 @@
 
     <!-- GAME 1: CONTEO -->
     <div id="screen-game1" class="screen">
-        <div class="instruction-box" onclick="speak('Toca las manzanitas para contarlas todas.')">
+        <div class="instruction-box" onclick="speak('Toca los objetos para contarlos todos.')">
             <span class="play-audio-icon">🔊</span>
-            <span id="inst-1">Toca las manzanitas para contarlas todas.</span>
+            <span id="inst-1">Toca los objetos para contarlos todos.</span>
         </div>
         <div class="counter-display" id="g1-counter">0</div>
         <div class="conteo-area" id="g1-area">
