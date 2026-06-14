@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal de Juegos Interactivos | Innovación Educativa</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Canvas de Partículas Interactivas -->
+    <canvas id="particle-canvas"></canvas>
+
+    <div class="portal-container">
+        <!-- Encabezado -->
+        <header class="portal-header">
+            <h1 class="portal-title">Portal de Juegos Innovadores</h1>
+            <p class="portal-subtitle">Descubre dos experiencias interactivas diseñadas para asombrar con física cuántica y aprender a transformar nuestra comunidad.</p>
+        </header>
+
+        <!-- Selección de Juegos -->
+        <div class="games-grid">
+            
+            <!-- JUEGO 1: NEBULA FORGE -->
+            <div class="game-card cosmic" onclick="location.href='nebula_forge.html'">
+                <div class="card-badge">Efecto WOW & Física</div>
+                <div class="card-icon-container">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                    </svg>
+                </div>
+                <h2 class="card-title">Nebula Forge</h2>
+                <p class="card-description">Domina la gravedad orbital. Lanza átomos, genera fusiones nucleares estelares y crea tu propio sistema solar.</p>
+                <button class="play-btn">
+                    <span>Iniciar Simulación</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8 5v14l11-7z"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- JUEGO 2: SENDA COMUNITARIA -->
+            <div class="game-card cultural" onclick="location.href='senda_comunitaria.html'">
+                <div class="card-badge">Alineado a la NEM</div>
+                <div class="card-icon-container">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3zm0 5.5c1.38 0 2.5 1.12 2.5 2.5s-1.12 2.5-2.5 2.5-2.5-1.12-2.5-2.5 1.12-2.5 2.5-2.5z"/>
+                    </svg>
+                </div>
+                <h2 class="card-title">Senda Comunitaria</h2>
+                <p class="card-description">Resuelve los dilemas del barrio. Participa en proyectos comunitarios ecológicos y sociales para mejorar tu entorno.</p>
+                <button class="play-btn">
+                    <span>Entrar al Barrio</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8 5v14l11-7z"/>
+                    </svg>
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Pie de página informativo -->
+    <footer class="portal-footer">
+        <p>Desarrollado para la clase de Educación Básica | Diseñado bajo los lineamientos de la Nueva Escuela Mexicana (NEM)</p>
+    </footer>
+
+    <!-- Script del Canvas de Partículas del Portal -->
+    <script>
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let particles = [];
+        const particleCount = 60;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2.5 + 0.5;
+                this.speedX = Math.random() * 0.4 - 0.2;
+                this.speedY = Math.random() * 0.4 - 0.2;
+                this.color = Math.random() > 0.5 ? 'rgba(0, 255, 255, 0.3)' : 'rgba(138, 43, 226, 0.3)';
+            }
+
+            update() {
+                this.x += this.x > canvas.width || this.x < 0 ? -(this.speedX = -this.speedX) : this.speedX;
+                this.y += this.y > canvas.height || this.y < 0 ? -(this.speedY = -this.speedY) : this.speedY;
+            }
+
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function init() {
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+
+        init();
+        animate();
+    </script>
+</body>
+</html>

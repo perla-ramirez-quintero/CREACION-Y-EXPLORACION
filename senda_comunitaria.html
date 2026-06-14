@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Senda Comunitaria | Guardianes del Barrio</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="senda-theme">
+
+    <!-- Botón de retorno al portal -->
+    <a href="index.html" class="back-to-portal" style="color: var(--nem-dark); background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.08);">
+        <svg viewBox="0 0 24 24">
+            <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+        </svg>
+        <span>Volver al Portal</span>
+    </a>
+
+    <!-- Layout principal -->
+    <div class="senda-layout">
+        
+        <!-- Sidebar de Indicadores NEM -->
+        <aside class="senda-sidebar">
+            <div class="senda-hud">
+                <div>
+                    <h1 class="senda-title">Senda Comunitaria</h1>
+                    <p style="font-size: 0.85rem; color: #57606f; margin-bottom: 1rem;">Construyendo el bienestar colectivo de nuestro barrio.</p>
+                </div>
+
+                <!-- Indicadores de la Comunidad -->
+                <div class="glass-panel">
+                    <h2 style="font-size: 0.9rem; text-transform: uppercase; color: var(--nem-primary); margin-bottom: 1rem; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 0.3rem;">Indicadores del Barrio</h2>
+                    
+                    <!-- Indicador 1: Tejido Social -->
+                    <div class="stat-item">
+                        <div class="stat-header">
+                            <span>🤝 Tejido Social (Unión)</span>
+                            <span id="val-social">50%</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill fill-social" id="bar-social" style="width: 50%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Indicador 2: Salud Ambiental -->
+                    <div class="stat-item">
+                        <div class="stat-header">
+                            <span>🌱 Salud Ambiental</span>
+                            <span id="val-health">50%</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill fill-health" id="bar-health" style="width: 50%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Indicador 3: Bienestar Humano -->
+                    <div class="stat-item">
+                        <div class="stat-header">
+                            <span>🏡 Bienestar Común</span>
+                            <span id="val-wellbeing">50%</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill fill-wellbeing" id="bar-wellbeing" style="width: 50%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Registro Escolar NEM -->
+                <div class="glass-panel" style="font-size: 0.8rem; line-height: 1.5; color: #57606f;">
+                    <div class="sidebar-label">Alineación Pedagógica</div>
+                    <p>Este simulador fomenta los proyectos comunitarios y la co-diseño de soluciones locales sostenibles, ejes angulares de la <strong>Nueva Escuela Mexicana</strong>.</p>
+                </div>
+            </div>
+
+            <!-- Instrucciones de Uso -->
+            <div class="glass-panel" style="font-size: 0.8rem; line-height: 1.4; color: #57606f;">
+                <strong>Instrucciones:</strong> El mapa del barrio muestra zonas activas con alertas palpitantes. Haz clic en ellas para hablar con tus vecinos, resolver dilemas y superar mini-juegos de lógica para mejorar la comunidad.
+            </div>
+        </aside>
+
+        <!-- Zona del mapa SVG Interactivo -->
+        <main class="senda-map-container">
+            <svg id="senda-svg-map" viewBox="0 0 800 600">
+                <!-- Fondo del Mapa (Áreas verdes, caminos, río) -->
+                <rect width="800" height="600" fill="#eef9f6" />
+                <path d="M 0,300 C 200,310 300,200 450,250 C 600,300 650,450 800,400" fill="none" stroke="#b2bec3" stroke-width="40" stroke-linecap="round" />
+                <path d="M 0,300 C 200,310 300,200 450,250 C 600,300 650,450 800,400" fill="none" stroke="#dfe6e9" stroke-width="34" stroke-linecap="round" /> <!-- Caminos -->
+
+                <!-- Zonas Ilustradas del Barrio -->
+                <!-- 1. Huerto Comunitario -->
+                <g transform="translate(180, 150)">
+                    <rect x="-60" y="-45" width="120" height="90" rx="15" fill="#f5f6fa" stroke="#dcdde1" stroke-width="2" />
+                    <text x="0" y="-15" font-family="Outfit" font-size="12" font-weight="700" fill="#2c3e50" text-anchor="middle">🌱 Huerto Vecinal</text>
+                    <!-- Iconografía simple -->
+                    <circle cx="-25" cy="15" r="10" fill="#2ecc71" opacity="0.3"/>
+                    <circle cx="0" cy="15" r="10" fill="#2ecc71" opacity="0.3"/>
+                    <circle cx="25" cy="15" r="10" fill="#2ecc71" opacity="0.3"/>
+                    <text x="0" y="20" font-size="16" text-anchor="middle">🌻</text>
+                </g>
+
+                <!-- 2. Centro de Captación de Agua -->
+                <g transform="translate(620, 160)">
+                    <rect x="-60" y="-45" width="120" height="90" rx="15" fill="#f5f6fa" stroke="#dcdde1" stroke-width="2" />
+                    <text x="0" y="-15" font-family="Outfit" font-size="12" font-weight="700" fill="#2c3e50" text-anchor="middle">💧 Captación Pluvial</text>
+                    <rect x="-30" y="5" width="60" height="25" rx="5" fill="#3498db" opacity="0.2"/>
+                    <text x="0" y="22" font-size="16" text-anchor="middle">⛲</text>
+                </g>
+
+                <!-- 3. Escuela Primaria "Tierra y Libertad" -->
+                <g transform="translate(400, 320)">
+                    <rect x="-70" y="-50" width="140" height="100" rx="15" fill="#f5f6fa" stroke="#dcdde1" stroke-width="2" />
+                    <text x="0" y="-20" font-family="Outfit" font-size="12" font-weight="700" fill="#2c3e50" text-anchor="middle">🏫 Escuela Primaria</text>
+                    <rect x="-40" y="5" width="80" height="30" rx="5" fill="#e74c3c" opacity="0.1"/>
+                    <text x="0" y="26" font-size="18" text-anchor="middle">🎒</text>
+                </g>
+
+                <!-- 4. Parque y Canchas de Recreación -->
+                <g transform="translate(200, 450)">
+                    <rect x="-60" y="-45" width="120" height="90" rx="15" fill="#f5f6fa" stroke="#dcdde1" stroke-width="2" />
+                    <text x="0" y="-15" font-family="Outfit" font-size="12" font-weight="700" fill="#2c3e50" text-anchor="middle">🛹 Parque Central</text>
+                    <circle cx="0" cy="15" r="20" fill="#f1c40f" opacity="0.1"/>
+                    <text x="0" y="22" font-size="18" text-anchor="middle">🌳</text>
+                </g>
+
+                <!-- 5. Mercadito Solidario de Trueque -->
+                <g transform="translate(580, 440)">
+                    <rect x="-60" y="-45" width="120" height="90" rx="15" fill="#f5f6fa" stroke="#dcdde1" stroke-width="2" />
+                    <text x="0" y="-15" font-family="Outfit" font-size="12" font-weight="700" fill="#2c3e50" text-anchor="middle">🛒 Mercadito Trueque</text>
+                    <rect x="-35" y="5" width="70" height="25" rx="5" fill="#e67e22" opacity="0.1"/>
+                    <text x="0" y="22" font-size="16" text-anchor="middle">🍎</text>
+                </g>
+
+                <!-- PINS INTERACTIVOS (ALERTAS) -->
+                <!-- Pin Huerto -->
+                <g id="pin-huerto" class="map-marker" onclick="openQuest('huerto')">
+                    <circle cx="180" cy="150" r="25" fill="#1abc9c" opacity="0.3" class="marker-pulse" />
+                    <circle cx="180" cy="150" r="12" fill="#1abc9c" stroke="#ffffff" stroke-width="2" />
+                    <text x="180" y="154" font-size="10" fill="#ffffff" text-anchor="middle" font-weight="bold">!</text>
+                </g>
+
+                <!-- Pin Agua -->
+                <g id="pin-agua" class="map-marker" onclick="openQuest('agua')">
+                    <circle cx="620" cy="160" r="25" fill="#3498db" opacity="0.3" class="marker-pulse" />
+                    <circle cx="620" cy="160" r="12" fill="#3498db" stroke="#ffffff" stroke-width="2" />
+                    <text x="620" y="164" font-size="10" fill="#ffffff" text-anchor="middle" font-weight="bold">!</text>
+                </g>
+
+                <!-- Pin Escuela -->
+                <g id="pin-escuela" class="map-marker" onclick="openQuest('escuela')">
+                    <circle cx="400" cy="320" r="25" fill="#e74c3c" opacity="0.3" class="marker-pulse" />
+                    <circle cx="400" cy="320" r="12" fill="#e74c3c" stroke="#ffffff" stroke-width="2" />
+                    <text x="400" y="324" font-size="10" fill="#ffffff" text-anchor="middle" font-weight="bold">!</text>
+                </g>
+
+                <!-- Pin Parque -->
+                <g id="pin-parque" class="map-marker" onclick="openQuest('parque')">
+                    <circle cx="200" cy="450" r="25" fill="#2ecc71" opacity="0.3" class="marker-pulse" />
+                    <circle cx="200" cy="450" r="12" fill="#2ecc71" stroke="#ffffff" stroke-width="2" />
+                    <text x="200" y="454" font-size="10" fill="#ffffff" text-anchor="middle" font-weight="bold">!</text>
+                </g>
+
+                <!-- Pin Mercado -->
+                <g id="pin-mercado" class="map-marker" onclick="openQuest('mercado')">
+                    <circle cx="580" cy="440" r="25" fill="#e67e22" opacity="0.3" class="marker-pulse" />
+                    <circle cx="580" cy="440" r="12" fill="#e67e22" stroke="#ffffff" stroke-width="2" />
+                    <text x="580" y="444" font-size="10" fill="#ffffff" text-anchor="middle" font-weight="bold">!</text>
+                </g>
+            </svg>
+
+            <!-- Toast de Feedback flotante -->
+            <div id="senda-toast" class="toast-feedback"></div>
+        </main>
+    </div>
+
+    <!-- Modales para Dilemas y Mini-juegos -->
+    <div class="modal-overlay" id="quest-modal">
+        <div class="modal-content" id="quest-modal-content">
+            <!-- El contenido dinámico de dilemas o mini-juegos se inyectará aquí -->
+        </div>
+    </div>
+
+    <script src="senda_comunitaria.js"></script>
+</body>
+</html>

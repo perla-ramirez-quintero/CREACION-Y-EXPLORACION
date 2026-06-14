@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nebula Forge | Alquimia Estelar</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="nebula-theme">
+
+    <!-- Botón para regresar al portal -->
+    <a href="index.html" class="back-to-portal">
+        <svg viewBox="0 0 24 24">
+            <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+        </svg>
+        <span>Volver al Portal</span>
+    </a>
+
+    <!-- Layout del juego -->
+    <div class="nebula-layout">
+        
+        <!-- Panel de control lateral -->
+        <aside class="nebula-sidebar">
+            <div class="nebula-hud">
+                <div>
+                    <h1 class="nebula-title">Nebula Forge</h1>
+                    <p style="font-size: 0.85rem; color: #b2bec3; margin-bottom: 1rem;">Forja cósmica de elementos químicos.</p>
+                </div>
+
+                <!-- Estado del Reactor/Núcleo -->
+                <div class="glass-panel">
+                    <div class="sidebar-label">Cuerpo Celeste Forjado</div>
+                    <div class="sidebar-value" id="celestial-name">Polvo Espacial</div>
+                    
+                    <div style="margin-top: 1rem;">
+                        <div class="sidebar-label">Energía del Lanzador</div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill fill-energy" id="energy-bar" style="width: 100%;"></div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 1rem;">
+                        <div class="sidebar-label">Masa Acumulada</div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill fill-mass" id="mass-bar" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Selector de Elementos -->
+                <div class="glass-panel">
+                    <div class="sidebar-label">Seleccionar Elemento a Lanzar</div>
+                    <div class="element-selector-container">
+                        <button class="element-btn h-btn active" onclick="selectElement('H')">
+                            H
+                            <span>Hidrógeno (Masa: 1)</span>
+                        </button>
+                        <button class="element-btn he-btn" onclick="selectElement('He')">
+                            He
+                            <span>Helio (Masa: 4)</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tabla de Elementos Creados -->
+                <div class="glass-panel" style="font-size: 0.85rem;">
+                    <div class="sidebar-label">Tabla de Fusión Lograda</div>
+                    <ul style="list-style: none; color: #d1d8e0; margin-top: 0.5rem; line-height: 1.6;" id="fusion-log">
+                        <li>🌌 H + H ➔ Helio (He)</li>
+                        <li>🔥 He + He ➔ Carbono (C)</li>
+                        <li>⚡ C + He ➔ Oxígeno (O)</li>
+                        <li>💥 O + C ➔ Hierro (Fe)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Instrucciones rápidas -->
+            <div class="glass-panel" style="font-size: 0.8rem; line-height: 1.4; color: #b2bec3;">
+                <strong>Instrucciones:</strong> Haz clic y arrastra en el espacio para lanzar átomos hacia el núcleo gravitatorio central. ¡Combina átomos iguales para fusionarlos y subir de nivel estelar!
+            </div>
+        </aside>
+
+        <!-- Zona del canvas espacial -->
+        <main class="nebula-canvas-container">
+            <canvas id="nebula-canvas"></canvas>
+            
+            <!-- Toast Feedback flotante -->
+            <div id="toast" class="toast-feedback"></div>
+        </main>
+    </div>
+
+    <!-- Modal de Fin de Juego / Victoria -->
+    <div class="modal-overlay" id="nebula-modal">
+        <div class="modal-content" style="background: var(--cosmic-bg); color: #fff; border: 1px solid rgba(255,255,255,0.1);">
+            <div class="modal-header">
+                <span class="modal-badge" id="modal-badge-status" style="background: rgba(0, 255, 255, 0.1); color: var(--cosmic-secondary);">¡Simulación Terminada!</span>
+            </div>
+            <h2 class="modal-title" id="modal-title-text" style="font-size: 2.2rem; margin-bottom: 1rem;">Estrella Forjada</h2>
+            <p class="modal-description" id="modal-desc-text" style="color: #b2bec3;">¡Has logrado fusionar suficientes elementos para crear una enana roja brillante!</p>
+            <button class="btn-primary" onclick="restartGame()" style="background: linear-gradient(135deg, var(--cosmic-primary), var(--cosmic-accent)); width: 100%; padding: 1rem; border-radius: 12px; font-size: 1.1rem; box-shadow: 0 5px 15px rgba(138,43,226,0.4);">
+                Volver a Forjar
+            </button>
+        </div>
+    </div>
+
+    <script src="nebula_forge.js"></script>
+</body>
+</html>
