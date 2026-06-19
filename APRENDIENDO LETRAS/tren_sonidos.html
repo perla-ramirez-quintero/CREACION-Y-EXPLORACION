@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tren de los Sonidos | Preescolar Fase 2</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="preschool-theme">
+
+    <button class="back-to-portal" onclick="location.href='index.html'">
+        <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        Volver al Portal
+    </button>
+
+    <h1 class="preschool-title">El Tren de los Nombres</h1>
+    
+    <div id="step-1">
+        <h2 style="text-align: center; color: var(--preschool-dark); font-size: 2rem;">¿Cuál es tu nombre?</h2>
+        <div class="name-display" id="name-display">_</div>
+        <div class="virtual-keyboard" id="keyboard">
+            <!-- Teclas inyectadas por JS -->
+        </div>
+        <div style="text-align: center; margin-top: 1rem;">
+            <button class="key-btn action-btn" onclick="startTrain()" id="btn-start" style="display: none;">¡Subir al tren! 🚂</button>
+            <button class="key-btn action-btn" onclick="clearName()" style="background: #f39c12; border-color: #e67e22; box-shadow: 0 4px 0 #e67e22;">Borrar ❌</button>
+        </div>
+    </div>
+
+    <div id="step-2" style="display: none;">
+        <div class="train-container" id="train-track">
+            <!-- Locomotora y Vagones -->
+            <div class="train-engine"></div>
+        </div>
+
+        <div style="text-align: center; margin-top: 2rem;">
+            <h2 id="instruction-text" style="color: var(--preschool-dark); font-size: 2rem; margin-bottom: 1rem;">Busca algo que empiece con la letra...</h2>
+            
+            <div id="options-container" style="display: flex; justify-content: center; gap: 20px;">
+                <!-- Opciones inyectadas por JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Victoria -->
+    <div class="modal-overlay" id="victory-modal">
+        <div class="modal-content preschool-modal">
+            <h2 class="modal-title" style="font-size: 3rem; color: var(--preschool-secondary); margin-bottom: 1rem;">¡Tren Completado!</h2>
+            <div style="font-size: 6rem; margin: 1rem 0; animation: bounce 1.5s infinite;">🎉🚂🎊</div>
+            <p style="font-size: 1.5rem; font-weight: 700; color: var(--preschool-dark);">¡Tu nombre tiene sonidos muy especiales!</p>
+            <button class="btn-primary" onclick="location.reload()" style="font-size: 1.5rem; padding: 1rem 2rem;">Volver a Jugar</button>
+        </div>
+    </div>
+
+    <script src="tren_sonidos.js"></script>
+</body>
+</html>

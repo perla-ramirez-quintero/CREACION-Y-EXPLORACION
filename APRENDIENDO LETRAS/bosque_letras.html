@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bosque de las Letras | Preescolar Fase 2</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="preschool-theme">
+
+    <button class="back-to-portal" onclick="location.href='index.html'">
+        <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        Volver al Portal
+    </button>
+
+    <h1 class="preschool-title">¡El Bosque Mágico de las Letras!</h1>
+    
+    <div class="preschool-canvas" id="bosque-container">
+        <!-- Fondo del Bosque -->
+        <div class="forest-sky"></div>
+        <div class="forest-ground"></div>
+        <!-- Árboles Decorativos -->
+        <div class="tree-bg" style="left: 10%; bottom: 10%; transform: scale(1.2);">🌲</div>
+        <div class="tree-bg" style="right: 15%; bottom: 20%; transform: scale(1.5);">🌳</div>
+        <div class="tree-bg" style="left: 40%; bottom: 30%; transform: scale(0.9);">🌲</div>
+        <div class="tree-bg" style="right: 45%; bottom: 5%; transform: scale(1.1);">🌳</div>
+        <div class="tree-bg" style="left: 20%; bottom: 40%; transform: scale(0.8);">🌲</div>
+        <!-- Nubes Decorativas -->
+        <div class="cloud-bg" style="left: 10%; top: 10%;">☁️</div>
+        <div class="cloud-bg" style="right: 20%; top: 15%;">☁️</div>
+        
+        <!-- Las letras se inyectarán aquí vía JavaScript -->
+    </div>
+
+    <!-- Modal Preescolar -->
+    <div class="modal-overlay" id="preschool-modal">
+        <div class="modal-content preschool-modal">
+            <h2 class="modal-title" id="modal-letter" style="font-size: 5rem; color: var(--preschool-primary); margin-bottom: 0;">A</h2>
+            <p class="modal-description" id="modal-word" style="font-size: 2rem; font-weight: 800; color: var(--preschool-dark);">de Abeja</p>
+            <div id="modal-icon" style="font-size: 6rem; margin: 1rem 0; animation: bounce 2s infinite;">🐝</div>
+            <button class="btn-primary" onclick="closeModal()" style="font-size: 1.5rem; padding: 1rem 2rem; background: var(--preschool-secondary);">¡Genial!</button>
+        </div>
+    </div>
+
+    <script src="bosque_letras.js"></script>
+</body>
+</html>
