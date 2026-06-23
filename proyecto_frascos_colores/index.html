@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Los Frascos de los Colores</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #f0f8ff;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #ff6b6b;
+            margin-bottom: 5px;
+        }
+        p {
+            color: #4a4a4a;
+            font-size: 1.2rem;
+        }
+        #game-board {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        .jars-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .jar {
+            width: 120px;
+            height: 160px;
+            border: 4px solid #4a4a4a;
+            border-radius: 10px 10px 40px 40px;
+            background-color: rgba(255, 255, 255, 0.7);
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            padding-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        }
+        .jar:hover {
+            transform: scale(1.05);
+        }
+        .jar-contents {
+            display: flex;
+            flex-wrap: wrap-reverse;
+            justify-content: center;
+            gap: 4px;
+            width: 100px;
+            height: 80px;
+        }
+        .jar-contents .ball {
+            width: 25px;
+            height: 25px;
+            cursor: default;
+        }
+        .balls-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            min-height: 100px;
+            padding: 25px;
+            background-color: #fff;
+            border-radius: 20px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+            width: 80%;
+            max-width: 700px;
+        }
+        .ball {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+        .ball.selected {
+            transform: scale(1.2) translateY(-10px);
+            box-shadow: 0 10px 15px rgba(0,0,0,0.3);
+            border: 3px solid #ffe66d;
+        }
+        .success-msg {
+            display: none;
+            color: #4ecdc4;
+            font-size: 2rem;
+            font-weight: bold;
+            margin-top: 20px;
+            animation: pop 0.5s ease-out;
+        }
+        @keyframes pop {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+        .shake {
+            animation: shake 0.3s;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Los Frascos de los Colores</h1>
+    <p>¡Toca una bolita para escuchar su color y llévala a su frasco!</p>
+
+    <div id="game-board">
+        <div class="jars-container">
+            <div class="jar" id="jar-0" onclick="selectJar(0)">
+                <div class="jar-contents" id="jar-contents-0"></div>
+            </div>
+            <div class="jar" id="jar-1" onclick="selectJar(1)">
+                <div class="jar-contents" id="jar-contents-1"></div>
+            </div>
+            <div class="jar" id="jar-2" onclick="selectJar(2)">
+                <div class="jar-contents" id="jar-contents-2"></div>
+            </div>
+            <div class="jar" id="jar-3" onclick="selectJar(3)">
+                <div class="jar-contents" id="jar-contents-3"></div>
+            </div>
+            <div class="jar" id="jar-4" onclick="selectJar(4)">
+                <div class="jar-contents" id="jar-contents-4"></div>
+            </div>
+        </div>
+
+        <div class="balls-container" id="balls-container"></div>
+
+        <div id="success-msg" class="success-msg">¡Todos los colores están ordenados! 🎉</div>
+    </div>
+
+    <script>
+        const availableColors = [
+            { name: 'rojo', hex: '#ff6b6b' },
+            { name: 'verde', hex: '#4ecdc4' },
+            { name: 'amarillo', hex: '#ffe66d' },
+            { name: 'azul', hex: '#1a535c' },
+            { name: 'naranja', hex: '#ff9f1c' }
+        ];
+
+        const ballsToPlace = [];
+        availableColors.forEach(color => {
+            ballsToPlace.push({ ...color }, { ...color });
+        });
+
+        let selectedBallElement = null;
+        let selectedColorHex = null;
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function initGame() {
+            const container = document.getElementById('balls-container');
+            shuffle(ballsToPlace);
+            
+            ballsToPlace.forEach((colorData, index) => {
+                const ball = document.createElement('div');
+                ball.classList.add('ball');
+                ball.style.backgroundColor = colorData.hex;
+                ball.id = 'ball-' + index;
+                ball.dataset.colorName = colorData.name;
+                ball.dataset.colorHex = colorData.hex;
+                
+                ball.onclick = () => selectBall(ball);
+                container.appendChild(ball);
+            });
+        }
+
+        function hablar(texto) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); 
+                const mensaje = new SpeechSynthesisUtterance(texto);
+                mensaje.lang = 'es-MX';
+                mensaje.rate = 0.9;
+                window.speechSynthesis.speak(mensaje);
+            }
+        }
+
+        function selectBall(ballElement) {
+            if (selectedBallElement) {
+                selectedBallElement.classList.remove('selected');
+            }
+            selectedBallElement = ballElement;
+            selectedColorHex = ballElement.dataset.colorHex;
+            ballElement.classList.add('selected');
+
+            hablar(ballElement.dataset.colorName);
+        }
+
+        function selectJar(jarIndex) {
+            if (!selectedBallElement) return;
+
+            const jarElement = document.getElementById('jar-' + jarIndex);
+            const jarContents = document.getElementById('jar-contents-' + jarIndex);
+
+            if (jarContents.children.length === 0) {
+                jarElement.style.borderColor = selectedColorHex;
+                jarElement.dataset.matchingColorHex = selectedColorHex;
+            }
+
+            if (selectedColorHex === jarElement.dataset.matchingColorHex) {
+                const miniBall = selectedBallElement.cloneNode(true);
+                miniBall.classList.remove('selected');
+                miniBall.onclick = null;
+                
+                jarContents.appendChild(miniBall);
+                
+                selectedBallElement.remove();
+                selectedBallElement = null;
+                selectedColorHex = null;
+
+                checkWin();
+            } else {
+                jarElement.classList.add('shake');
+                hablar("Intenta otra vez");
+                setTimeout(() => {
+                    jarElement.classList.remove('shake');
+                }, 300);
+            }
+        }
+
+        function checkWin() {
+            const container = document.getElementById('balls-container');
+            if (container.children.length === 0) {
+                document.getElementById('success-msg').style.display = 'block';
+                setTimeout(() => {
+                    hablar("¡Excelente trabajo! ¡Todos los colores están ordenados!");
+                }, 500);
+            }
+        }
+
+        window.onload = initGame;
+    </script>
+</body>
+</html>
