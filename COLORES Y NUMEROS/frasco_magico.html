@@ -1,0 +1,2105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>El Frasco Mágico de Colores 🧪✨</title>
+  <meta name="description" content="Juego educativo interactivo para preescolar: reconoce y clasifica colores, cuenta bolitas y aprende los números del 1 al 10 con 10 niveles mágicos." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ══════════════════════════════════════════
+       ROOT VARIABLES — CANDY WORLD PALETTE
+    ══════════════════════════════════════════ */
+    :root {
+      --pink:    #FF6FB4;
+      --blue:    #5BC8F5;
+      --yellow:  #FFD93D;
+      --green:   #6BCB77;
+      --orange:  #FF9A3C;
+      --purple:  #B47AEA;
+      --red:     #FF5757;
+      --white:   #FFFFFF;
+      --bg1:     #1a0533;
+      --bg2:     #0d1f6e;
+      --glass:   rgba(255,255,255,0.10);
+      --glass-border: rgba(255,255,255,0.25);
+      --shadow:  0 8px 32px rgba(0,0,0,0.35);
+      --radius:  22px;
+      --font:    'Nunito', sans-serif;
+    }
+
+    /* ══════════════════════════════════════════
+       RESET & BASE
+    ══════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%; height: 100%;
+      font-family: var(--font);
+      background: linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 100%);
+      overflow: hidden;
+      user-select: none;
+    }
+
+    /* ══════════════════════════════════════════
+       ANIMATED BACKGROUND BUBBLES
+    ══════════════════════════════════════════ */
+    #bg-bubbles {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+    }
+    .bubble {
+      position: absolute; border-radius: 50%;
+      opacity: 0.12; animation: floatBubble linear infinite;
+    }
+    @keyframes floatBubble {
+      0%   { transform: translateY(110vh) scale(0.8); opacity: 0.08; }
+      50%  { opacity: 0.18; }
+      100% { transform: translateY(-20vh) scale(1.1); opacity: 0; }
+    }
+
+    /* ══════════════════════════════════════════
+       APP WRAPPER
+    ══════════════════════════════════════════ */
+    #app {
+      position: relative; z-index: 1;
+      width: 100vw; height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: flex-start;
+      padding: 12px 8px 8px;
+      gap: 10px;
+    }
+
+    /* ══════════════════════════════════════════
+       HEADER
+    ══════════════════════════════════════════ */
+    #header {
+      display: flex; align-items: center; justify-content: space-between;
+      width: 100%; max-width: 820px;
+    }
+    #game-title {
+      font-size: clamp(1.1rem, 3vw, 1.5rem);
+      font-weight: 900; color: var(--white);
+      text-shadow: 0 0 20px rgba(255,111,180,0.8), 0 2px 4px rgba(0,0,0,0.5);
+      letter-spacing: -0.5px;
+    }
+    #game-title span { color: var(--yellow); }
+
+    #score-box {
+      display: flex; gap: 12px; align-items: center;
+    }
+    .stat-pill {
+      background: var(--glass); backdrop-filter: blur(10px);
+      border: 1px solid var(--glass-border);
+      border-radius: 50px; padding: 5px 14px;
+      font-size: 0.85rem; font-weight: 800; color: var(--white);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .stat-pill .icon { font-size: 1rem; }
+
+    /* ══════════════════════════════════════════
+       LEVEL PROGRESS BAR
+    ══════════════════════════════════════════ */
+    #level-progress {
+      width: 100%; max-width: 820px;
+      display: flex; gap: 4px; align-items: center;
+    }
+    .level-dot {
+      flex: 1; height: 8px; border-radius: 50px;
+      background: rgba(255,255,255,0.15);
+      transition: background 0.4s, transform 0.3s;
+      cursor: default;
+    }
+    .level-dot.done    { background: var(--green); }
+    .level-dot.active  { background: var(--yellow); transform: scaleY(1.6); }
+
+    /* ══════════════════════════════════════════
+       MAIN GAME CARD
+    ══════════════════════════════════════════ */
+    #game-card {
+      background: var(--glass);
+      backdrop-filter: blur(18px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      width: 100%; max-width: 820px;
+      flex: 1;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: flex-start;
+      padding: 18px 20px 14px;
+      gap: 14px;
+      overflow: hidden;
+    }
+
+    /* Level badge + title */
+    #level-badge {
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+      border-radius: 50px; padding: 4px 18px;
+      font-size: 0.78rem; font-weight: 800; color: var(--white);
+      letter-spacing: 1px; text-transform: uppercase;
+    }
+    #level-title {
+      font-size: clamp(1.2rem, 4vw, 1.7rem);
+      font-weight: 900; color: var(--white);
+      text-align: center; line-height: 1.2;
+    }
+    #level-title .emoji { font-size: 1.3em; }
+    #level-instruction {
+      font-size: clamp(0.85rem, 2.5vw, 1rem);
+      color: rgba(255,255,255,0.85);
+      text-align: center; font-weight: 700;
+      max-width: 560px; line-height: 1.4;
+    }
+
+    /* ══════════════════════════════════════════
+       GAME AREA
+    ══════════════════════════════════════════ */
+    #game-area {
+      width: 100%; flex: 1;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 16px;
+    }
+
+    /* ── BALLS TRAY ── */
+    #balls-tray {
+      display: flex; flex-wrap: wrap;
+      justify-content: center; align-items: center;
+      gap: 10px;
+      min-height: 70px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 18px;
+      padding: 12px 20px;
+      width: 100%;
+      max-width: 680px;
+    }
+
+    /* ── BALL ── */
+    .ball {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      cursor: grab;
+      position: relative;
+      transition: transform 0.15s, box-shadow 0.15s;
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; font-weight: 900; color: rgba(255,255,255,0.9);
+      text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.3), inset 0 -4px 8px rgba(0,0,0,0.2), inset 4px 4px 10px rgba(255,255,255,0.35);
+      animation: popIn 0.35s cubic-bezier(0.175,0.885,0.32,1.275);
+    }
+    .ball:hover  { transform: scale(1.12) translateY(-3px); }
+    .ball.dragging { opacity: 0.5; cursor: grabbing; transform: scale(0.9); }
+    .ball.ghost {
+      position: fixed; pointer-events: none; z-index: 999;
+      cursor: grabbing; transform: scale(1.18);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.5), inset 0 -4px 8px rgba(0,0,0,0.2), inset 4px 4px 10px rgba(255,255,255,0.35);
+    }
+    @keyframes popIn {
+      0%   { transform: scale(0) rotate(-30deg); opacity: 0; }
+      100% { transform: scale(1) rotate(0deg);   opacity: 1; }
+    }
+
+    /* Ball color classes */
+    .ball-red    { background: radial-gradient(circle at 35% 30%, #ff8a8a, var(--red) 60%); }
+    .ball-blue   { background: radial-gradient(circle at 35% 30%, #90dcf8, var(--blue) 60%); }
+    .ball-yellow { background: radial-gradient(circle at 35% 30%, #ffe98a, var(--yellow) 60%); }
+    .ball-green  { background: radial-gradient(circle at 35% 30%, #a6e8a8, var(--green) 60%); }
+    .ball-pink   { background: radial-gradient(circle at 35% 30%, #ffa5d0, var(--pink) 60%); }
+    .ball-orange { background: radial-gradient(circle at 35% 30%, #ffbe80, var(--orange) 60%); }
+    .ball-purple { background: radial-gradient(circle at 35% 30%, #d1a8f7, var(--purple) 60%); }
+
+    /* ── JARS ROW ── */
+    #jars-row {
+      display: flex; flex-wrap: wrap;
+      justify-content: center; align-items: flex-end;
+      gap: 14px;
+      width: 100%;
+    }
+
+    /* ── JAR ── */
+    .jar-wrap {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 6px;
+    }
+    .jar-label {
+      font-size: clamp(1.6rem, 5vw, 2.2rem);
+      font-weight: 900; color: var(--white);
+      text-shadow: 0 0 14px rgba(255,255,255,0.5);
+      line-height: 1;
+    }
+    .jar {
+      position: relative;
+      width: 90px;
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255,255,255,0.35);
+      border-top: none;
+      border-radius: 0 0 28px 28px;
+      padding: 8px 6px 8px;
+      display: flex; flex-direction: column-reverse;
+      align-items: center;
+      gap: 5px;
+      min-height: 110px;
+      max-height: 200px;
+      overflow: hidden;
+      transition: border-color 0.3s, box-shadow 0.3s, background 0.3s;
+      cursor: default;
+    }
+    .jar::before {
+      content: '';
+      position: absolute; top: -12px; left: -2px; right: -2px; height: 16px;
+      background: rgba(255,255,255,0.25);
+      border-radius: 12px 12px 0 0;
+      border: 2px solid rgba(255,255,255,0.35);
+      border-bottom: none;
+    }
+    .jar.drop-target {
+      border-color: var(--yellow);
+      box-shadow: 0 0 20px rgba(255,217,61,0.5);
+      background: rgba(255,217,61,0.12);
+    }
+    .jar.correct {
+      border-color: var(--green);
+      box-shadow: 0 0 28px rgba(107,203,119,0.7);
+      background: rgba(107,203,119,0.15);
+      animation: jarPulse 0.5s ease;
+    }
+    .jar.wrong {
+      border-color: var(--red);
+      box-shadow: 0 0 20px rgba(255,87,87,0.5);
+      animation: shake 0.4s ease;
+    }
+    @keyframes jarPulse {
+      0%,100% { transform: scale(1); }
+      50%      { transform: scale(1.06); }
+    }
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      25%      { transform: translateX(-6px); }
+      75%      { transform: translateX(6px); }
+    }
+
+    /* Ball inside jar (smaller) */
+    .jar .ball {
+      width: 30px; height: 30px;
+      font-size: 0.65rem;
+      cursor: default;
+      animation: popIn 0.25s cubic-bezier(0.175,0.885,0.32,1.275);
+    }
+
+    /* ══════════════════════════════════════════
+       CHOICE BUTTONS (for MCQ levels)
+    ══════════════════════════════════════════ */
+    #choices-row {
+      display: flex; flex-wrap: wrap;
+      justify-content: center; gap: 12px;
+    }
+    .choice-btn {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--purple), var(--blue));
+      border: 3px solid rgba(255,255,255,0.4);
+      font-size: 1.6rem; font-weight: 900; color: var(--white);
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .choice-btn:hover   { transform: scale(1.15) translateY(-3px); box-shadow: 0 10px 28px rgba(0,0,0,0.4); }
+    .choice-btn.correct { background: linear-gradient(135deg, #3ecf5e, var(--green)); animation: popIn 0.3s ease; }
+    .choice-btn.wrong   { background: linear-gradient(135deg, #e05151, var(--red)); animation: shake 0.4s ease; }
+
+    /* ══════════════════════════════════════════
+       ORDER LEVEL — DRAGGABLE JARS
+    ══════════════════════════════════════════ */
+    #order-area {
+      display: flex; flex-wrap: wrap;
+      justify-content: center; gap: 12px;
+      width: 100%;
+    }
+    .order-jar-wrap {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 6px;
+      cursor: grab;
+      padding: 8px;
+      border-radius: 14px;
+      border: 2px dashed transparent;
+      transition: border-color 0.25s, background 0.25s;
+    }
+    .order-jar-wrap:hover { border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.06); }
+    .order-jar-wrap.dragging-order { opacity: 0.4; }
+    .order-jar-wrap.drag-over-order { border-color: var(--yellow); background: rgba(255,217,61,0.1); }
+    .order-jar-num {
+      font-size: 2rem; font-weight: 900; color: var(--white);
+      text-shadow: 0 0 12px rgba(255,255,255,0.6);
+    }
+    .order-jar-body {
+      width: 70px; height: 90px;
+      border-radius: 0 0 22px 22px;
+      border: 2px solid rgba(255,255,255,0.35);
+      border-top: none;
+      display: flex; align-items: flex-end; justify-content: center;
+      padding-bottom: 8px;
+      position: relative;
+    }
+    .order-jar-body::before {
+      content:''; position:absolute; top:-10px; left:-2px; right:-2px; height:13px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 10px 10px 0 0;
+      border: 2px solid rgba(255,255,255,0.35); border-bottom:none;
+    }
+    .order-jar-dots {
+      display:flex; flex-wrap:wrap; gap:3px;
+      justify-content: center; align-items: flex-end;
+    }
+    .order-dot {
+      width:14px; height:14px; border-radius:50%;
+      box-shadow: inset 2px 2px 4px rgba(255,255,255,0.35);
+    }
+
+    /* ══════════════════════════════════════════
+       SEQUENCE LEVEL
+    ══════════════════════════════════════════ */
+    #sequence-row {
+      display: flex; flex-wrap: wrap;
+      justify-content: center; align-items: center;
+      gap: 10px;
+    }
+    .seq-num {
+      width: 60px; height: 60px; border-radius: 14px;
+      background: rgba(255,255,255,0.12);
+      border: 2px solid rgba(255,255,255,0.3);
+      font-size: 1.7rem; font-weight: 900; color: var(--white);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .seq-num.missing {
+      background: rgba(255,217,61,0.15);
+      border: 2px dashed var(--yellow);
+      color: rgba(255,255,255,0.3);
+      font-size: 1.3rem;
+    }
+    .seq-arrow { font-size: 1.2rem; color: rgba(255,255,255,0.4); }
+
+    /* ══════════════════════════════════════════
+       COMPARE LEVEL
+    ══════════════════════════════════════════ */
+    #compare-area {
+      display: flex; align-items: center;
+      justify-content: center; gap: 20px;
+      width: 100%;
+    }
+    #compare-area .vs-badge {
+      font-size: 1.4rem; font-weight: 900; color: var(--yellow);
+      text-shadow: 0 0 10px rgba(255,217,61,0.7);
+      flex-shrink: 0;
+    }
+    .compare-option {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 8px;
+      cursor: pointer;
+      padding: 12px;
+      border-radius: 18px;
+      border: 2px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.07);
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+      min-width: 110px;
+    }
+    .compare-option:hover { transform: scale(1.05); border-color: var(--yellow); box-shadow: 0 0 20px rgba(255,217,61,0.3); }
+    .compare-option.correct { border-color: var(--green); box-shadow: 0 0 24px rgba(107,203,119,0.6); }
+    .compare-option.wrong   { border-color: var(--red);   animation: shake 0.4s; }
+    .compare-count { font-size: 2rem; font-weight: 900; color: var(--white); }
+
+    /* ══════════════════════════════════════════
+       ADDITION LEVEL
+    ══════════════════════════════════════════ */
+    #addition-area {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 12px; width: 100%;
+    }
+    #addition-jars {
+      display: flex; align-items: center;
+      justify-content: center; gap: 16px;
+    }
+    .add-symbol {
+      font-size: 2.5rem; font-weight: 900; color: var(--yellow);
+      text-shadow: 0 0 12px rgba(255,217,61,0.7);
+    }
+
+    /* ══════════════════════════════════════════
+       CLASSIFY LEVEL
+    ══════════════════════════════════════════ */
+    #classify-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 10px;
+      width: 100%;
+      max-width: 680px;
+    }
+    .classify-jar-wrap {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 4px;
+    }
+    .classify-jar-label {
+      font-size: 0.75rem; font-weight: 800;
+      color: rgba(255,255,255,0.85);
+      text-align: center; line-height: 1.2;
+    }
+
+    /* ══════════════════════════════════════════
+       MASTER LEVEL
+    ══════════════════════════════════════════ */
+    #master-area {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 12px; width: 100%;
+    }
+    #master-question {
+      font-size: clamp(1rem, 3vw, 1.3rem);
+      font-weight: 800; color: var(--yellow);
+      text-align: center;
+    }
+    #master-balls-display {
+      display: flex; flex-wrap: wrap;
+      justify-content: center; gap: 8px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 16px; padding: 12px 20px;
+    }
+    #master-input-row {
+      display: flex; gap: 10px; align-items: center;
+    }
+    #master-input {
+      width: 80px; height: 60px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.15);
+      border: 2px solid rgba(255,255,255,0.35);
+      font-size: 2rem; font-weight: 900; color: var(--white);
+      text-align: center;
+      font-family: var(--font);
+    }
+    #master-input:focus { outline: none; border-color: var(--yellow); box-shadow: 0 0 14px rgba(255,217,61,0.4); }
+    #master-check-btn {
+      padding: 14px 24px; border-radius: 14px;
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+      border: none; color: var(--white);
+      font-size: 1rem; font-weight: 900;
+      cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
+      font-family: var(--font);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+    }
+    #master-check-btn:hover { transform: scale(1.05) translateY(-2px); box-shadow: 0 10px 28px rgba(0,0,0,0.4); }
+
+    /* ══════════════════════════════════════════
+       FEEDBACK MESSAGE
+    ══════════════════════════════════════════ */
+    #feedback {
+      font-size: clamp(1rem, 3vw, 1.25rem);
+      font-weight: 900; text-align: center;
+      min-height: 32px;
+      transition: opacity 0.3s;
+      text-shadow: 0 0 16px currentColor;
+    }
+    #feedback.success { color: var(--green); }
+    #feedback.error   { color: var(--red); }
+    #feedback.info    { color: var(--yellow); }
+
+    /* ══════════════════════════════════════════
+       NEXT BUTTON
+    ══════════════════════════════════════════ */
+    #next-btn {
+      padding: 13px 40px; border-radius: 50px;
+      background: linear-gradient(135deg, var(--green), #3bcc58);
+      border: none; color: var(--white);
+      font-size: 1.05rem; font-weight: 900;
+      cursor: pointer; transition: transform 0.15s, box-shadow 0.15s, opacity 0.3s;
+      font-family: var(--font);
+      box-shadow: 0 6px 20px rgba(107,203,119,0.45);
+      display: none;
+    }
+    #next-btn.visible { display: block; animation: popIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275); }
+    #next-btn:hover { transform: scale(1.06) translateY(-2px); box-shadow: 0 10px 30px rgba(107,203,119,0.55); }
+
+    /* ══════════════════════════════════════════
+       VALIDATE BUTTON (Order / Classify levels)
+    ══════════════════════════════════════════ */
+    #validate-btn {
+      padding: 13px 36px; border-radius: 50px;
+      background: linear-gradient(135deg, var(--orange), #e07a20);
+      border: none; color: var(--white);
+      font-size: 1rem; font-weight: 900;
+      cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
+      font-family: var(--font);
+      box-shadow: 0 6px 20px rgba(255,154,60,0.4);
+    }
+    #validate-btn:hover { transform: scale(1.06) translateY(-2px); }
+
+    /* ══════════════════════════════════════════
+       WIN OVERLAY
+    ══════════════════════════════════════════ */
+    #win-overlay {
+      position: fixed; inset: 0; z-index: 100;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 20px;
+      background: rgba(10,5,30,0.88);
+      backdrop-filter: blur(8px);
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.5s;
+    }
+    #win-overlay.active { opacity: 1; pointer-events: all; }
+    #win-emoji { font-size: clamp(4rem, 12vw, 6rem); animation: bounceIn 0.7s cubic-bezier(0.175,0.885,0.32,1.275); }
+    #win-title {
+      font-size: clamp(1.8rem, 6vw, 3rem);
+      font-weight: 900; color: var(--yellow);
+      text-shadow: 0 0 30px rgba(255,217,61,0.8);
+      text-align: center;
+    }
+    #win-msg {
+      font-size: clamp(0.95rem, 2.5vw, 1.2rem);
+      color: rgba(255,255,255,0.85);
+      font-weight: 700; text-align: center; max-width: 480px;
+      line-height: 1.5;
+    }
+    #win-stars { font-size: clamp(2rem, 6vw, 3rem); letter-spacing: 8px; }
+    #restart-btn {
+      padding: 14px 48px; border-radius: 50px;
+      background: linear-gradient(135deg, var(--pink), var(--purple));
+      border: none; color: var(--white);
+      font-size: 1.1rem; font-weight: 900;
+      cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
+      font-family: var(--font);
+      box-shadow: 0 8px 24px rgba(180,122,234,0.45);
+    }
+    #restart-btn:hover { transform: scale(1.06) translateY(-2px); }
+    @keyframes bounceIn {
+      0%   { transform: scale(0); }
+      60%  { transform: scale(1.18); }
+      80%  { transform: scale(0.93); }
+      100% { transform: scale(1); }
+    }
+
+    /* ══════════════════════════════════════════
+       CONFETTI CANVAS
+    ══════════════════════════════════════════ */
+    #confetti-canvas {
+      position: fixed; inset: 0; z-index: 99;
+      pointer-events: none;
+    }
+
+    /* ══════════════════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════════════════ */
+    @media (max-width: 500px) {
+      .ball { width: 44px; height: 44px; font-size: 0.9rem; }
+      .jar  { width: 72px; min-height: 90px; }
+      .jar .ball { width: 24px; height: 24px; }
+    }
+
+    /* ══════════════════════════════════════════
+       COLOR RECOGNITION LEVEL — SPOTLIGHT
+    ══════════════════════════════════════════ */
+    #color-spotlight {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 16px; width: 100%;
+    }
+    #color-word {
+      font-size: clamp(2.2rem, 8vw, 3.5rem);
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-shadow: 0 0 30px currentColor, 0 4px 8px rgba(0,0,0,0.5);
+      transition: color 0.4s, text-shadow 0.4s;
+      animation: wordPop 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
+    }
+    @keyframes wordPop {
+      0%   { transform: scale(0.6) rotate(-5deg); opacity: 0; }
+      100% { transform: scale(1)   rotate(0deg);  opacity: 1; }
+    }
+    #color-balls-grid {
+      display: flex; flex-wrap: wrap;
+      justify-content: center; gap: 14px;
+      max-width: 520px;
+    }
+    .color-choice-ball {
+      width: 72px; height: 72px; border-radius: 50%;
+      cursor: pointer;
+      border: 4px solid rgba(255,255,255,0.25);
+      transition: transform 0.18s, box-shadow 0.18s, border-color 0.2s;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35), inset 0 -5px 10px rgba(0,0,0,0.2), inset 5px 5px 12px rgba(255,255,255,0.35);
+      animation: popIn 0.35s cubic-bezier(0.175,0.885,0.32,1.275);
+      position: relative;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .color-choice-ball:hover { transform: scale(1.18) translateY(-4px); border-color: rgba(255,255,255,0.7); }
+    .color-choice-ball.correct {
+      border-color: #ffffff;
+      box-shadow: 0 0 40px currentColor, 0 0 16px rgba(255,255,255,0.8);
+      animation: ballBounce 0.5s cubic-bezier(0.175,0.885,0.32,1.275);
+    }
+    .color-choice-ball.wrong {
+      animation: shake 0.4s ease;
+      border-color: rgba(255,80,80,0.9);
+      opacity: 0.5;
+    }
+    @keyframes ballBounce {
+      0%   { transform: scale(1); }
+      40%  { transform: scale(1.3); }
+      70%  { transform: scale(0.92); }
+      100% { transform: scale(1.05); }
+    }
+    #color-score-row {
+      display: flex; gap: 6px;
+    }
+    .color-score-dot {
+      width: 14px; height: 14px; border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      transition: background 0.3s, transform 0.3s;
+    }
+    .color-score-dot.filled {
+      background: var(--yellow);
+      transform: scale(1.3);
+      box-shadow: 0 0 8px rgba(255,217,61,0.8);
+    }
+
+    /* ══════════════════════════════════════════
+       COLOR SORT RICH — color-labeled jars
+    ══════════════════════════════════════════ */
+    .jar-color-badge {
+      width: 20px; height: 20px; border-radius: 50%;
+      display: inline-block;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      flex-shrink: 0;
+    }
+    .jar-label-row {
+      display: flex; align-items: center; gap: 6px;
+      font-size: clamp(0.75rem, 2vw, 0.95rem);
+      font-weight: 900; color: var(--white);
+    }
+
+    /* ══════════════════════════════════════════
+       COUNT BY COLOR LEVEL
+    ══════════════════════════════════════════ */
+    #count-color-area {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 14px; width: 100%;
+    }
+    #count-color-question {
+      display: flex; align-items: center; gap: 12px;
+      font-size: clamp(1rem, 3vw, 1.3rem);
+      font-weight: 900; color: var(--white); text-align: center;
+    }
+    #count-color-question .big-ball {
+      width: 52px; height: 52px; border-radius: 50%; flex-shrink: 0;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.35), inset 4px 4px 10px rgba(255,255,255,0.35);
+    }
+    #count-color-pool {
+      display: flex; flex-wrap: wrap;
+      justify-content: center; gap: 8px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 18px; padding: 14px 18px;
+      max-width: 500px;
+    }
+    #count-color-pool .ball { cursor: default; }
+
+    /* ══════════════════════════════════════════
+       COLOR PATTERN LEVEL
+    ══════════════════════════════════════════ */
+    #pattern-area {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 18px; width: 100%;
+    }
+    #pattern-row {
+      display: flex; flex-wrap: wrap;
+      align-items: center; justify-content: center;
+      gap: 8px;
+    }
+    .pattern-ball {
+      width: 54px; height: 54px; border-radius: 50%;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.3), inset 4px 4px 10px rgba(255,255,255,0.35);
+      animation: popIn 0.3s cubic-bezier(0.175,0.885,0.32,1.275);
+    }
+    .pattern-ball.mystery {
+      background: rgba(255,255,255,0.1);
+      border: 3px dashed rgba(255,255,255,0.5);
+      box-shadow: none;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; color: rgba(255,255,255,0.5);
+    }
+    .pattern-arrow {
+      font-size: 1.1rem; color: rgba(255,255,255,0.35);
+    }
+    #pattern-choices {
+      display: flex; flex-wrap: wrap;
+      justify-content: center; gap: 12px;
+    }
+    .pattern-choice {
+      width: 64px; height: 64px; border-radius: 50%;
+      cursor: pointer;
+      border: 3px solid rgba(255,255,255,0.3);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.3), inset 4px 4px 10px rgba(255,255,255,0.35);
+      transition: transform 0.18s, box-shadow 0.18s;
+      animation: popIn 0.35s cubic-bezier(0.175,0.885,0.32,1.275);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem; font-weight: 900; color: rgba(255,255,255,0.9);
+    }
+    .pattern-choice:hover { transform: scale(1.15) translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.4); }
+    .pattern-choice.correct { border-color: #fff; box-shadow: 0 0 30px currentColor; animation: ballBounce 0.5s ease; }
+    .pattern-choice.wrong   { animation: shake 0.4s; opacity: 0.5; }
+  </style>
+</head>
+<body>
+
+<!-- Fondo animado -->
+<div id="bg-bubbles"></div>
+
+<!-- Confetti canvas -->
+<canvas id="confetti-canvas"></canvas>
+
+<!-- Overlay de victoria final -->
+<div id="win-overlay">
+  <div id="win-emoji">🏆</div>
+  <div id="win-title">¡Eres un Maestro Numerador!</div>
+  <div id="win-stars">⭐⭐⭐</div>
+  <div id="win-msg">Completaste los 10 niveles del Frasco Mágico. ¡Los números ya no tienen secretos para ti!</div>
+  <button id="restart-btn" onclick="restartGame()">🔄 Jugar de nuevo</button>
+</div>
+
+<!-- App principal -->
+<div id="app">
+  <!-- Header -->
+  <div id="header">
+    <div id="game-title">🧪 El Frasco <span>Mágico</span></div>
+    <div id="score-box">
+      <div class="stat-pill"><span class="icon">⭐</span><span id="score-val">0</span></div>
+      <div class="stat-pill"><span class="icon">🏅</span> Nivel <span id="level-val">1</span>/10</div>
+    </div>
+  </div>
+
+  <!-- Progress dots -->
+  <div id="level-progress"></div>
+
+  <!-- Game card -->
+  <div id="game-card">
+    <div id="level-badge">NIVEL <span id="badge-num">1</span></div>
+    <div id="level-title"></div>
+    <div id="level-instruction"></div>
+    <div id="game-area"></div>
+    <div id="feedback"></div>
+    <button id="next-btn" onclick="nextLevel()">Siguiente nivel ➜</button>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════
+   GLOBAL STATE
+══════════════════════════════════════════════════════ */
+let currentLevel = 1;
+let score = 0;
+let levelPassed = false;
+let ghostEl = null;
+let dragBall = null;
+let dragBallColor = '';
+
+const COLORS = ['red','blue','yellow','green','pink','orange','purple'];
+const COLOR_NAMES = {
+  red:'Rojo', blue:'Azul', yellow:'Amarillo',
+  green:'Verde', pink:'Rosa', orange:'Naranja', purple:'Morado'
+};
+
+/* ══════════════════════════════════════════════════════
+   AUDIO ENGINE
+══════════════════════════════════════════════════════ */
+let ctx = null;
+function getCtx() {
+  if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+  return ctx;
+}
+function playTone(freq, type='sine', dur=0.18, vol=0.25, delay=0) {
+  try {
+    const c = getCtx();
+    const osc = c.createOscillator();
+    const gain = c.createGain();
+    osc.connect(gain); gain.connect(c.destination);
+    osc.type = type; osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0, c.currentTime + delay);
+    gain.gain.linearRampToValueAtTime(vol, c.currentTime + delay + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + delay + dur);
+    osc.start(c.currentTime + delay);
+    osc.stop(c.currentTime + delay + dur + 0.02);
+  } catch(e){}
+}
+function playPop()   { playTone(600,'sine',0.12,0.3); }
+function playSuccess() {
+  [523,659,784,1047].forEach((f,i)=>playTone(f,'sine',0.15,0.28,i*0.1));
+}
+function playError() { playTone(200,'sawtooth',0.2,0.3); }
+function playLevelWin() {
+  [784,988,1175,1568].forEach((f,i)=>playTone(f,'sine',0.2,0.3,i*0.08));
+}
+
+/* ══════════════════════════════════════════════════════
+   BACKGROUND BUBBLES
+══════════════════════════════════════════════════════ */
+function initBubbles() {
+  const cont = document.getElementById('bg-bubbles');
+  const colors = ['#FF6FB4','#5BC8F5','#FFD93D','#6BCB77','#FF9A3C','#B47AEA','#FF5757'];
+  for (let i = 0; i < 18; i++) {
+    const b = document.createElement('div');
+    b.className = 'bubble';
+    const sz = 40 + Math.random() * 120;
+    b.style.cssText = `
+      width:${sz}px; height:${sz}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      left:${Math.random()*100}vw;
+      animation-duration:${8+Math.random()*14}s;
+      animation-delay:-${Math.random()*12}s;
+    `;
+    cont.appendChild(b);
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   LEVEL PROGRESS BAR
+══════════════════════════════════════════════════════ */
+function renderProgress() {
+  const bar = document.getElementById('level-progress');
+  bar.innerHTML = '';
+  for (let i = 1; i <= 10; i++) {
+    const d = document.createElement('div');
+    d.className = 'level-dot' + (i < currentLevel ? ' done' : i === currentLevel ? ' active' : '');
+    bar.appendChild(d);
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   UTILITY — Create ball element
+══════════════════════════════════════════════════════ */
+function makeBall(color, label='', draggable=true) {
+  const b = document.createElement('div');
+  b.className = `ball ball-${color}`;
+  if (label) b.textContent = label;
+  if (draggable) {
+    b.setAttribute('draggable','true');
+    b.dataset.color = color;
+    b.addEventListener('mousedown', onBallMouseDown);
+    b.addEventListener('touchstart', onBallTouchStart, {passive:false});
+  }
+  return b;
+}
+
+/* ══════════════════════════════════════════════════════
+   DRAG SYSTEM (Mouse + Touch)
+══════════════════════════════════════════════════════ */
+function onBallMouseDown(e) {
+  e.preventDefault();
+  startDrag(e.currentTarget, e.clientX, e.clientY);
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseup', onMouseUp);
+}
+function onBallTouchStart(e) {
+  e.preventDefault();
+  const t = e.touches[0];
+  startDrag(e.currentTarget, t.clientX, t.clientY);
+  document.addEventListener('touchmove', onTouchMove, {passive:false});
+  document.addEventListener('touchend', onTouchEnd);
+}
+function startDrag(el, x, y) {
+  dragBall = el;
+  dragBallColor = el.dataset.color;
+  dragBall.classList.add('dragging');
+  ghostEl = el.cloneNode(true);
+  ghostEl.classList.add('ghost');
+  ghostEl.classList.remove('dragging');
+  ghostEl.style.width = '52px'; ghostEl.style.height = '52px';
+  ghostEl.style.left = (x - 26) + 'px';
+  ghostEl.style.top  = (y - 26) + 'px';
+  document.body.appendChild(ghostEl);
+  playPop();
+}
+function moveGhost(x, y) {
+  if (ghostEl) {
+    ghostEl.style.left = (x - 26) + 'px';
+    ghostEl.style.top  = (y - 26) + 'px';
+  }
+  // highlight drop targets
+  document.querySelectorAll('.jar').forEach(j => {
+    const r = j.getBoundingClientRect();
+    const over = x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
+    j.classList.toggle('drop-target', over);
+  });
+}
+function onMouseMove(e)  { moveGhost(e.clientX, e.clientY); }
+function onTouchMove(e)  { e.preventDefault(); const t=e.touches[0]; moveGhost(t.clientX,t.clientY); }
+function onMouseUp(e) {
+  endDrag(e.clientX, e.clientY);
+  document.removeEventListener('mousemove', onMouseMove);
+  document.removeEventListener('mouseup', onMouseUp);
+}
+function onTouchEnd(e) {
+  const t=e.changedTouches[0];
+  endDrag(t.clientX,t.clientY);
+  document.removeEventListener('touchmove', onTouchMove);
+  document.removeEventListener('touchend', onTouchEnd);
+}
+function endDrag(x, y) {
+  if (!dragBall) return;
+  // Find jar under pointer
+  let dropped = false;
+  document.querySelectorAll('.jar').forEach(j => {
+    j.classList.remove('drop-target');
+    const r = j.getBoundingClientRect();
+    if (!dropped && x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) {
+      dropped = true;
+      handleDrop(j, dragBallColor, dragBall);
+    }
+  });
+  if (!dropped) {
+    dragBall.classList.remove('dragging');
+  }
+  if (ghostEl) { ghostEl.remove(); ghostEl = null; }
+  dragBall = null;
+}
+
+/* ══════════════════════════════════════════════════════
+   FEEDBACK
+══════════════════════════════════════════════════════ */
+function showFeedback(msg, type='success') {
+  const f = document.getElementById('feedback');
+  f.textContent = msg; f.className = type;
+  f.style.opacity = '1';
+}
+function clearFeedback() {
+  const f = document.getElementById('feedback');
+  f.textContent = ''; f.className = '';
+}
+function showNext() {
+  const btn = document.getElementById('next-btn');
+  btn.classList.add('visible');
+}
+
+/* ══════════════════════════════════════════════════════
+   SCORE
+══════════════════════════════════════════════════════ */
+function addScore(pts) {
+  score += pts;
+  document.getElementById('score-val').textContent = score;
+}
+
+/* ══════════════════════════════════════════════════════
+   CONFETTI
+══════════════════════════════════════════════════════ */
+let confettiPieces = [];
+let confettiRunning = false;
+function launchConfetti() {
+  const cv = document.getElementById('confetti-canvas');
+  cv.width = window.innerWidth; cv.height = window.innerHeight;
+  const colors2 = ['#FF6FB4','#5BC8F5','#FFD93D','#6BCB77','#FF9A3C','#B47AEA','#FF5757'];
+  confettiPieces = [];
+  for (let i = 0; i < 120; i++) {
+    confettiPieces.push({
+      x: Math.random()*cv.width, y: -20,
+      w: 6+Math.random()*10, h: 8+Math.random()*14,
+      color: colors2[Math.floor(Math.random()*colors2.length)],
+      vx: -3+Math.random()*6, vy: 3+Math.random()*5,
+      rot: Math.random()*360, rotV: -4+Math.random()*8,
+      alpha: 1
+    });
+  }
+  confettiRunning = true;
+  animateConfetti();
+}
+function animateConfetti() {
+  if (!confettiRunning) return;
+  const cv = document.getElementById('confetti-canvas');
+  const c2 = cv.getContext('2d');
+  c2.clearRect(0,0,cv.width,cv.height);
+  confettiPieces.forEach((p,i) => {
+    p.x += p.vx; p.y += p.vy; p.rot += p.rotV;
+    if (p.y > cv.height) { p.alpha -= 0.05; }
+    c2.save();
+    c2.globalAlpha = Math.max(0, p.alpha);
+    c2.translate(p.x, p.y);
+    c2.rotate(p.rot * Math.PI/180);
+    c2.fillStyle = p.color;
+    c2.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+    c2.restore();
+  });
+  confettiPieces = confettiPieces.filter(p => p.alpha > 0);
+  if (confettiPieces.length > 0) requestAnimationFrame(animateConfetti);
+  else { confettiRunning = false; c2.clearRect(0,0,cv.width,cv.height); }
+}
+
+/* ══════════════════════════════════════════════════════
+   LEVEL DEFINITIONS — 10 LEVELS
+══════════════════════════════════════════════════════ */
+const LEVELS = [
+  /* ── BLOQUE 1: COLORES (Niveles 1–4) ── */
+  {
+    id: 1,
+    title: '🎨 ¿Cómo se llama este color?',
+    instruction: 'Lee el nombre del color y toca la bolita correcta',
+    type: 'color-name',
+    rounds: 7,   // 7 colores × 1 ronda cada uno
+    points: 30
+  },
+  {
+    id: 2,
+    title: '🌈 ¡Clasifica por Color!',
+    instruction: 'Arrastra cada bolita al frasco de su color. ¡Son 5 colores!',
+    type: 'color-sort',
+    colors: ['red','blue','yellow','green','pink'],
+    ballsPerColor: 3,
+    points: 40
+  },
+  {
+    id: 3,
+    title: '🔴 ¿Cuántas [color] hay?',
+    instruction: 'Cuenta solo las bolitas del color que se pide',
+    type: 'count-by-color',
+    poolColors: ['red','blue','yellow','green','pink','orange'],
+    poolSize: 12,
+    rounds: 4,
+    choices: 5,
+    points: 35
+  },
+  {
+    id: 4,
+    title: '🎭 ¡El Patrón de Colores!',
+    instruction: 'Mira el patrón y toca la bolita que sigue',
+    type: 'color-pattern',
+    rounds: 4,
+    points: 40
+  },
+  /* ── BLOQUE 2: NÚMEROS (Niveles 5–10) ── */
+  {
+    id: 5,
+    title: '🔢 ¡Mis Primeros Números!',
+    instruction: 'Toca el frasco que tiene el número que se muestra',
+    type: 'number-find',
+    range: [1,5],
+    jarsCount: 4,
+    points: 20
+  },
+  {
+    id: 6,
+    title: '📶 ¡Ordena los Frascos!',
+    instruction: 'Arrastra los frascos para ponerlos en orden del 1 al 7',
+    type: 'order-jars',
+    count: 7,
+    points: 40
+  },
+  {
+    id: 7,
+    title: '⚖️ ¿Cuál Tiene Más?',
+    instruction: 'Toca el frasco que tiene MÁS bolitas',
+    type: 'compare',
+    range: [1,9],
+    rounds: 3,
+    points: 30
+  },
+  {
+    id: 8,
+    title: '🔎 ¡El Número Escondido!',
+    instruction: 'Toca el número que falta en la secuencia',
+    type: 'sequence',
+    range: [1,9],
+    seqLen: 5,
+    points: 35
+  },
+  {
+    id: 9,
+    title: '➕ ¡Suma Divertida!',
+    instruction: 'Cuenta las bolitas de los dos frascos juntos y escoge el total',
+    type: 'addition',
+    range: [1,5],
+    choices: 5,
+    points: 40
+  },
+  {
+    id: 10,
+    title: '👑 ¡Maestro de Colores y Números!',
+    instruction: 'Cuenta las bolitas y escribe cuántas hay',
+    type: 'master',
+    rounds: 4,
+    range: [4,10],
+    points: 60
+  }
+];
+
+/* ══════════════════════════════════════════════════════
+   MAIN RENDER
+══════════════════════════════════════════════════════ */
+function renderLevel() {
+  const lvl = LEVELS[currentLevel - 1];
+  levelPassed = false;
+  clearFeedback();
+  document.getElementById('next-btn').classList.remove('visible');
+
+  document.getElementById('badge-num').textContent = currentLevel;
+  document.getElementById('level-val').textContent = currentLevel;
+  document.getElementById('level-title').innerHTML = lvl.title;
+  document.getElementById('level-instruction').textContent = lvl.instruction;
+
+  renderProgress();
+
+  const area = document.getElementById('game-area');
+  area.innerHTML = '';
+
+  switch(lvl.type) {
+    case 'color-name':     renderColorName(lvl, area); break;
+    case 'color-sort':     renderColorSort(lvl, area); break;
+    case 'count-by-color': renderCountByColor(lvl, area); break;
+    case 'color-pattern':  renderColorPattern(lvl, area); break;
+    case 'number-find':    renderNumberFind(lvl, area); break;
+    case 'count-choose':   renderCountChoose(lvl, area); break;
+    case 'fill-jar':       renderFillJar(lvl, area); break;
+    case 'order-jars':     renderOrderJars(lvl, area); break;
+    case 'compare':        renderCompare(lvl, area); break;
+    case 'sequence':       renderSequence(lvl, area); break;
+    case 'addition':       renderAddition(lvl, area); break;
+    case 'classify':       renderClassify(lvl, area); break;
+    case 'master':         renderMaster(lvl, area); break;
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   NIVEL 1 — RECONOCIMIENTO DE NOMBRE DE COLOR
+   El nombre del color aparece grande y brillante.
+   El niño toca la bolita del color correcto entre 5-7 opciones.
+══════════════════════════════════════════════════════ */
+function renderColorName(lvl, area) {
+  const allColors = ['red','blue','yellow','green','pink','orange','purple'];
+  let round = 0;
+  let hits = 0;
+
+  function nextRound() {
+    area.innerHTML = '';
+    const shuffled = shuffle([...allColors]);
+    const target = shuffled[0]; // color a reconocer
+    const options = shuffled.slice(0, 6); // 6 opciones
+    shuffle(options);
+
+    const spotlight = document.createElement('div');
+    spotlight.id = 'color-spotlight';
+
+    // Nombre del color grande y brillante
+    const wordEl = document.createElement('div');
+    wordEl.id = 'color-word';
+    wordEl.textContent = COLOR_NAMES[target];
+    wordEl.style.color = getColorHex(target);
+    wordEl.style.textShadow = `0 0 40px ${getColorHex(target)}, 0 4px 8px rgba(0,0,0,0.5)`;
+    spotlight.appendChild(wordEl);
+
+    // Puntos de progreso
+    const scoreRow = document.createElement('div');
+    scoreRow.id = 'color-score-row';
+    for (let i = 0; i < lvl.rounds; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'color-score-dot' + (i < hits ? ' filled' : '');
+      scoreRow.appendChild(dot);
+    }
+    spotlight.appendChild(scoreRow);
+
+    // Grid de bolitas de colores
+    const grid = document.createElement('div');
+    grid.id = 'color-balls-grid';
+    options.forEach(c => {
+      const ball = document.createElement('div');
+      ball.className = `color-choice-ball ball-${c}`;
+      ball.title = COLOR_NAMES[c];
+      ball.addEventListener('click', () => {
+        if (c === target) {
+          ball.classList.add('correct');
+          playSuccess();
+          addScore(Math.floor(lvl.points / lvl.rounds));
+          showFeedback(`¡Correcto! Es ${COLOR_NAMES[target]} 🎉`, 'success');
+          hits++;
+          round++;
+          // Actualizar dots
+          const dots = scoreRow.querySelectorAll('.color-score-dot');
+          dots.forEach((d, i) => { if (i < hits) d.classList.add('filled'); });
+          if (round >= lvl.rounds && !levelPassed) {
+            levelPassed = true;
+            setTimeout(() => { launchConfetti(); playLevelWin(); showNext(); showFeedback('¡Reconociste todos los colores! 🌈', 'success'); }, 600);
+          } else if (round < lvl.rounds) {
+            setTimeout(() => { clearFeedback(); nextRound(); }, 700);
+          }
+        } else {
+          ball.classList.add('wrong');
+          playError();
+          showFeedback(`Ese es ${COLOR_NAMES[c]}... busca el ${COLOR_NAMES[target]} 👀`, 'error');
+          setTimeout(() => ball.classList.remove('wrong'), 500);
+        }
+      });
+      grid.appendChild(ball);
+    });
+    spotlight.appendChild(grid);
+    area.appendChild(spotlight);
+  }
+  nextRound();
+}
+
+/* ══════════════════════════════════════════════════════
+   NIVEL 2 — COLOR SORT (RICO: 5 colores × 3 bolitas)
+   Frascos con badge de color + nombre. Bolitas mezcladas.
+══════════════════════════════════════════════════════ */
+function renderColorSort(lvl, area) {
+  const needed = lvl.colors.length * lvl.ballsPerColor;
+  let placedCount = 0;
+
+  // Bolitas mezcladas en la bandeja
+  const allBalls = [];
+  lvl.colors.forEach(c => { for (let i = 0; i < lvl.ballsPerColor; i++) allBalls.push(c); });
+  shuffle(allBalls);
+
+  const tray = document.createElement('div');
+  tray.id = 'balls-tray';
+  allBalls.forEach(c => {
+    const b = makeBall(c);
+    b.dataset.color = c;
+    tray.appendChild(b);
+  });
+  area.appendChild(tray);
+
+  // Frascos: badge de color + nombre + frasco glassmorphism
+  const jRow = document.createElement('div');
+  jRow.id = 'jars-row';
+  lvl.colors.forEach(c => {
+    const wrap = document.createElement('div');
+    wrap.className = 'jar-wrap';
+
+    // Label con badge circular de color
+    const labelRow = document.createElement('div');
+    labelRow.className = 'jar-label-row';
+    const badge = document.createElement('span');
+    badge.className = 'jar-color-badge';
+    badge.style.background = `radial-gradient(circle at 35% 30%, white, ${getColorHex(c)})`;
+    const name = document.createElement('span');
+    name.textContent = COLOR_NAMES[c];
+    name.style.color = getColorHex(c);
+    name.style.textShadow = `0 0 10px ${getColorHex(c)}88`;
+    labelRow.appendChild(badge); labelRow.appendChild(name);
+
+    const jar = document.createElement('div');
+    jar.className = 'jar';
+    jar.dataset.targetColor = c;
+    // Tinte sutil del color del frasco
+    jar.style.borderColor = getColorHex(c) + '55';
+    jar.style.boxShadow = `inset 0 0 20px ${getColorHex(c)}18`;
+
+    wrap.appendChild(labelRow); wrap.appendChild(jar);
+    jRow.appendChild(wrap);
+  });
+  area.appendChild(jRow);
+
+  // Drop handler
+  window.handleDrop = function(jar, color, ballEl) {
+    const target = jar.dataset.targetColor;
+    if (!target) return;
+    if (color === target) {
+      ballEl.remove();
+      jar.appendChild(makeBall(color, '', false));
+      jar.classList.add('correct');
+      setTimeout(() => jar.classList.remove('correct'), 600);
+      placedCount++;
+      playSuccess();
+      addScore(Math.floor(lvl.points / needed));
+      showFeedback(`¡Bien! La bolita ${COLOR_NAMES[color]} va aquí 🎉`, 'success');
+      if (placedCount >= needed && !levelPassed) {
+        levelPassed = true;
+        setTimeout(() => { launchConfetti(); playLevelWin(); showNext(); showFeedback('¡Clasificaste todos los colores! 🌈', 'success'); }, 400);
+      }
+    } else {
+      jar.classList.add('wrong');
+      setTimeout(() => jar.classList.remove('wrong'), 500);
+      ballEl.classList.remove('dragging');
+      playError();
+      showFeedback(`Esa bolita es ${COLOR_NAMES[color]}, no ${COLOR_NAMES[target]} 😅`, 'error');
+    }
+  };
+}
+
+/* ══════════════════════════════════════════════════════
+   NIVEL 3 — CONTAR POR COLOR
+   Aparecen N bolitas mezcladas. El niño cuenta solo las del
+   color pedido y elige el número correcto.
+══════════════════════════════════════════════════════ */
+function renderCountByColor(lvl, area) {
+  let round = 0;
+
+  function nextRound() {
+    area.innerHTML = '';
+    const targetColor = lvl.poolColors[Math.floor(Math.random() * lvl.poolColors.length)];
+
+    // Generar piscina de bolitas: al menos 1-4 del color pedido
+    const targetCount = randInt(2, 5);
+    const otherCount  = lvl.poolSize - targetCount;
+    const pool = [];
+    for (let i = 0; i < targetCount; i++) pool.push(targetColor);
+    const others = lvl.poolColors.filter(c => c !== targetColor);
+    for (let i = 0; i < otherCount; i++) pool.push(others[Math.floor(Math.random() * others.length)]);
+    shuffle(pool);
+
+    const cca = document.createElement('div');
+    cca.id = 'count-color-area';
+
+    // Pregunta con bolita de muestra
+    const qRow = document.createElement('div');
+    qRow.id = 'count-color-question';
+    const sampleBall = document.createElement('div');
+    sampleBall.className = 'big-ball ball-' + targetColor;
+    sampleBall.style.cssText = `width:52px;height:52px;border-radius:50%;flex-shrink:0;
+      background:radial-gradient(circle at 35% 30%, white, ${getColorHex(targetColor)});
+      box-shadow:0 0 20px ${getColorHex(targetColor)}88, 0 6px 16px rgba(0,0,0,0.35);`;
+    const qText = document.createElement('span');
+    qText.innerHTML = `¿Cuántas bolitas <strong style="color:${getColorHex(targetColor)};text-shadow:0 0 12px ${getColorHex(targetColor)}">${COLOR_NAMES[targetColor]}</strong> hay?`;
+    qRow.appendChild(sampleBall); qRow.appendChild(qText);
+    cca.appendChild(qRow);
+
+    // Piscina de bolitas
+    const poolDiv = document.createElement('div');
+    poolDiv.id = 'count-color-pool';
+    pool.forEach(c => {
+      const b = makeBall(c, '', false);
+      if (c === targetColor) {
+        b.style.animation = 'none';
+        b.style.boxShadow = `0 0 16px ${getColorHex(c)}cc, 0 6px 16px rgba(0,0,0,0.3), inset 4px 4px 10px rgba(255,255,255,0.35)`;
+      }
+      poolDiv.appendChild(b);
+    });
+    cca.appendChild(poolDiv);
+
+    // Opciones numéricas
+    const choices = generateChoices(targetCount, 0, 7, lvl.choices);
+    const cRow = document.createElement('div');
+    cRow.id = 'choices-row';
+    choices.forEach(n => {
+      const btn = document.createElement('button');
+      btn.className = 'choice-btn'; btn.textContent = n;
+      btn.addEventListener('click', () => {
+        if (n === targetCount) {
+          btn.classList.add('correct'); playSuccess();
+          addScore(Math.floor(lvl.points / lvl.rounds));
+          showFeedback(`¡Exacto! Hay ${targetCount} bolitas ${COLOR_NAMES[targetColor]} 🎉`, 'success');
+          round++;
+          if (round >= lvl.rounds && !levelPassed) {
+            levelPassed = true;
+            setTimeout(() => { launchConfetti(); playLevelWin(); showNext(); }, 700);
+          } else if (round < lvl.rounds) {
+            setTimeout(() => { clearFeedback(); nextRound(); }, 900);
+          }
+        } else {
+          btn.classList.add('wrong'); playError();
+          showFeedback(`Cuenta de nuevo solo las ${COLOR_NAMES[targetColor]} 🔍`, 'error');
+          setTimeout(() => btn.classList.remove('wrong'), 500);
+        }
+      });
+      cRow.appendChild(btn);
+    });
+    cca.appendChild(cRow);
+    area.appendChild(cca);
+  }
+  nextRound();
+}
+
+/* ══════════════════════════════════════════════════════
+   NIVEL 4 — PATRÓN DE COLORES
+   Aparece una secuencia de bolitas de colores con un hueco.
+   El niño elige qué color sigue en el patrón.
+══════════════════════════════════════════════════════ */
+function renderColorPattern(lvl, area) {
+  let round = 0;
+  const palettes = [
+    ['red','blue'],
+    ['yellow','green'],
+    ['pink','purple'],
+    ['orange','blue'],
+    ['red','yellow','green'],
+    ['blue','pink','orange'],
+    ['purple','yellow','red']
+  ];
+
+  function nextRound() {
+    area.innerHTML = '';
+    const palette = palettes[Math.floor(Math.random() * palettes.length)];
+    const patLen  = palette.length; // longitud del ciclo
+    const seqLen  = patLen * 2 + 1; // cuántas bolitas mostrar
+    // Generar secuencia
+    const seq = Array.from({length: seqLen}, (_, i) => palette[i % patLen]);
+    const missingIdx = seqLen - 1; // siempre el último es el misterio
+    const answer = seq[missingIdx];
+
+    const pArea = document.createElement('div');
+    pArea.id = 'pattern-area';
+
+    const pRow = document.createElement('div');
+    pRow.id = 'pattern-row';
+    seq.forEach((c, i) => {
+      if (i > 0) { const arr=document.createElement('div'); arr.className='pattern-arrow'; arr.textContent='→'; pRow.appendChild(arr); }
+      if (i === missingIdx) {
+        const mystery = document.createElement('div');
+        mystery.className = 'pattern-ball mystery';
+        mystery.textContent = '?';
+        pRow.appendChild(mystery);
+      } else {
+        const pb = document.createElement('div');
+        pb.className = `pattern-ball ball-${c}`;
+        pRow.appendChild(pb);
+      }
+    });
+    pArea.appendChild(pRow);
+
+    // Instrucción de ayuda
+    const hint = document.createElement('div');
+    hint.style.cssText = 'font-size:0.85rem;color:rgba(255,255,255,0.6);font-weight:700;text-align:center;';
+    hint.textContent = '¿Qué color viene después?';
+    pArea.appendChild(hint);
+
+    // Opciones: los colores de la paleta + 1-2 distractores
+    const distractors = COLORS.filter(c => !palette.includes(c));
+    shuffle(distractors);
+    const choiceColors = shuffle([...palette, ...distractors.slice(0, Math.max(1, 4 - palette.length))]);
+
+    const pChoices = document.createElement('div');
+    pChoices.id = 'pattern-choices';
+    choiceColors.forEach(c => {
+      const btn = document.createElement('div');
+      btn.className = `pattern-choice ball-${c}`;
+      btn.title = COLOR_NAMES[c];
+      btn.style.background = `radial-gradient(circle at 35% 30%, white, ${getColorHex(c)}) `;
+      btn.addEventListener('click', () => {
+        if (c === answer) {
+          btn.classList.add('correct');
+          // Rellenar el hueco
+          const mystery = pRow.querySelector('.mystery');
+          if (mystery) {
+            mystery.className = `pattern-ball ball-${c}`;
+            mystery.textContent = '';
+            mystery.style.background = `radial-gradient(circle at 35% 30%, white, ${getColorHex(c)})`;
+          }
+          playSuccess(); addScore(Math.floor(lvl.points / lvl.rounds));
+          showFeedback(`¡Muy bien! El patrón continúa con ${COLOR_NAMES[answer]} 🎉`, 'success');
+          round++;
+          if (round >= lvl.rounds && !levelPassed) {
+            levelPassed = true;
+            setTimeout(() => { launchConfetti(); playLevelWin(); showNext(); showFeedback('¡Descubriste todos los patrones! 🌈', 'success'); }, 700);
+          } else if (round < lvl.rounds) {
+            setTimeout(() => { clearFeedback(); nextRound(); }, 900);
+          }
+        } else {
+          btn.classList.add('wrong'); playError();
+          showFeedback(`Ese es ${COLOR_NAMES[c]}... ¡fíjate en el patrón! 🔍`, 'error');
+          setTimeout(() => btn.classList.remove('wrong'), 500);
+        }
+      });
+      pChoices.appendChild(btn);
+    });
+    pArea.appendChild(pChoices);
+    area.appendChild(pArea);
+  }
+  nextRound();
+}
+
+/* ══════════════════════════════════════════════════════
+   LEVEL 2 — NUMBER FIND
+══════════════════════════════════════════════════════ */
+function renderNumberFind(lvl, area) {
+  const nums = [];
+  while (nums.length < lvl.jarsCount) {
+    const n = randInt(lvl.range[0], lvl.range[1]);
+    if (!nums.includes(n)) nums.push(n);
+  }
+  const target = nums[Math.floor(Math.random() * nums.length)];
+  let correct = 0; const needed = 3;
+
+  const question = document.createElement('div');
+  question.style.cssText = 'font-size:clamp(1.4rem,5vw,2rem);font-weight:900;color:var(--yellow);text-shadow:0 0 14px rgba(255,217,61,0.7);text-align:center;';
+  question.textContent = `Busca el frasco número: ${target}`;
+  area.appendChild(question);
+
+  const jRow = document.createElement('div');
+  jRow.id = 'jars-row';
+  nums.forEach(n => {
+    const wrap = document.createElement('div');
+    wrap.className = 'jar-wrap';
+    const lbl = document.createElement('div');
+    lbl.className = 'jar-label';
+    lbl.textContent = n;
+    const jar = document.createElement('div');
+    jar.className = 'jar';
+    jar.style.minHeight = '80px';
+    // fill with random balls
+    const col = COLORS[Math.floor(Math.random() * COLORS.length)];
+    for (let i = 0; i < n; i++) {
+      jar.appendChild(makeBall(COLORS[Math.floor(Math.random()*COLORS.length)], '', false));
+    }
+    jar.addEventListener('click', ()=>{
+      if (levelPassed) return;
+      if (n === target) {
+        jar.classList.add('correct'); playSuccess(); addScore(lvl.points);
+        showFeedback(`¡Correcto! El frasco ${target} 🎉`,'success');
+        if (++correct >= needed || needed === 1) {
+          levelPassed = true;
+          setTimeout(()=>{ launchConfetti(); playLevelWin(); showNext(); }, 500);
+        } else {
+          // new target
+          const remaining = nums.filter(x=>x!==target);
+          const newT = remaining[Math.floor(Math.random()*remaining.length)];
+          setTimeout(()=>{ question.textContent = `Busca el frasco número: ${newT}`; clearFeedback(); }, 700);
+        }
+      } else {
+        jar.classList.add('wrong'); playError();
+        showFeedback('Ese no es... ¡Sigue buscando! 🔍','error');
+        setTimeout(()=>jar.classList.remove('wrong'),500);
+      }
+    });
+    wrap.appendChild(lbl); wrap.appendChild(jar);
+    jRow.appendChild(wrap);
+  });
+  area.appendChild(jRow);
+}
+
+/* ══════════════════════════════════════════════════════
+   LEVEL 3 — COUNT AND CHOOSE
+══════════════════════════════════════════════════════ */
+function renderCountChoose(lvl, area) {
+  let rounds = 0; const maxRounds = 4;
+
+  function nextRound() {
+    area.innerHTML = '';
+    const count = randInt(lvl.range[0], lvl.range[1]);
+    const jRow = document.createElement('div');
+    jRow.id = 'jars-row';
+    const wrap = document.createElement('div');
+    wrap.className = 'jar-wrap';
+    const lbl = document.createElement('div');
+    lbl.className = 'jar-label'; lbl.textContent = '¿Cuántas?';
+    const jar = document.createElement('div');
+    jar.className = 'jar';
+    const col = COLORS[Math.floor(Math.random()*COLORS.length)];
+    for (let i=0;i<count;i++) jar.appendChild(makeBall(col,'',false));
+    wrap.appendChild(lbl); wrap.appendChild(jar);
+    jRow.appendChild(wrap); area.appendChild(jRow);
+
+    // Choices
+    const choices = generateChoices(count, lvl.range[0], lvl.range[1], lvl.choices);
+    const cRow = document.createElement('div');
+    cRow.id = 'choices-row';
+    choices.forEach(n => {
+      const btn = document.createElement('button');
+      btn.className = 'choice-btn'; btn.textContent = n;
+      btn.addEventListener('click', ()=>{
+        if (n===count) {
+          btn.classList.add('correct'); playSuccess(); addScore(lvl.points/maxRounds);
+          showFeedback(`¡Perfecto! Hay ${count} bolitas 🎉`,'success');
+          rounds++;
+          if (rounds >= maxRounds && !levelPassed) {
+            levelPassed = true;
+            setTimeout(()=>{ launchConfetti(); playLevelWin(); showNext(); }, 600);
+          } else if (rounds < maxRounds) {
+            setTimeout(()=>{ clearFeedback(); nextRound(); }, 800);
+          }
+        } else {
+          btn.classList.add('wrong'); playError();
+          showFeedback('¡Cuenta de nuevo! 🤔','error');
+          setTimeout(()=>btn.classList.remove('wrong'),500);
+        }
+      });
+      cRow.appendChild(btn);
+    });
+    area.appendChild(cRow);
+  }
+  nextRound();
+}
+
+/* ══════════════════════════════════════════════════════
+   LEVEL 4 — FILL JAR
+══════════════════════════════════════════════════════ */
+function renderFillJar(lvl, area) {
+  const target = randInt(lvl.range[0], lvl.range[1]);
+  let placed = 0;
+
+  const tray = document.createElement('div');
+  tray.id = 'balls-tray';
+  const ballPool = 10;
+  const col = COLORS[Math.floor(Math.random()*COLORS.length)];
+  for (let i=0;i<ballPool;i++) {
+    const b = makeBall(col);
+    b.dataset.color = col;
+    tray.appendChild(b);
+  }
+  area.appendChild(tray);
+
+  const jRow = document.createElement('div');
+  jRow.id = 'jars-row';
+  const wrap = document.createElement('div');
+  wrap.className = 'jar-wrap';
+  const lbl = document.createElement('div');
+  lbl.className = 'jar-label';
+  lbl.textContent = target;
+  lbl.style.cssText = 'font-size:2.5rem;color:var(--yellow);text-shadow:0 0 14px rgba(255,217,61,0.7);';
+  const jar = document.createElement('div');
+  jar.className = 'jar';
+  jar.dataset.fillTarget = target;
+  wrap.appendChild(lbl); wrap.appendChild(jar);
+  jRow.appendChild(wrap);
+  area.appendChild(jRow);
+
+  window.handleDrop = function(j, color, ballEl) {
+    if (levelPassed) return;
+    if (placed < target) {
+      ballEl.remove();
+      j.appendChild(makeBall(color,'',false));
+      placed++;
+      playPop();
+      showFeedback(`${placed} de ${target} bolitas ✨`,'info');
+      if (placed === target) {
+        j.classList.add('correct'); playSuccess(); addScore(lvl.points);
+        levelPassed = true;
+        setTimeout(()=>{ launchConfetti(); playLevelWin(); showFeedback(`¡Llenaste el frasco con ${target}! 🎉`,'success'); showNext(); }, 400);
+      }
+    } else {
+      jar.classList.add('wrong');
+      setTimeout(()=>jar.classList.remove('wrong'),400);
+      ballEl.classList.remove('dragging');
+      playError();
+      showFeedback(`¡Ya tiene ${target}! No caben más 😄`,'error');
+    }
+  };
+}
+
+/* ══════════════════════════════════════════════════════
+   LEVEL 5 — ORDER JARS
+══════════════════════════════════════════════════════ */
+function renderOrderJars(lvl, area) {
+  const nums = shuffle([...Array(lvl.count).keys()].map(i=>i+1));
+  const colMap = {};
+  COLORS.slice(0, lvl.count).forEach((c,i)=>colMap[i+1]=c);
+
+  const oArea = document.createElement('div');
+  oArea.id = 'order-area';
+
+  let draggedEl = null;
+
+  function buildJarEl(n) {
+    const wrap = document.createElement('div');
+    wrap.className = 'order-jar-wrap';
+    wrap.dataset.num = n;
+    wrap.setAttribute('draggable','true');
+
+    const numDiv = document.createElement('div');
+    numDiv.className = 'order-jar-num'; numDiv.textContent = n;
+
+    const body = document.createElement('div');
+    body.className = 'order-jar-body';
+    const col = colMap[n] || COLORS[n-1];
+    body.style.background = `linear-gradient(180deg, rgba(255,255,255,0.1) 0%, ${getColorHex(col)}55 100%)`;
+    body.style.borderColor = getColorHex(col) + '88';
+
+    const dots = document.createElement('div');
+    dots.className = 'order-jar-dots';
+    for (let i=0;i<n;i++) {
+      const d = document.createElement('div');
+      d.className = 'order-dot';
+      d.style.background = `radial-gradient(circle at 35% 30%, white, ${getColorHex(col)})`;
+      dots.appendChild(d);
+    }
+    body.appendChild(dots);
+    wrap.appendChild(numDiv); wrap.appendChild(body);
+
+    // Mouse/Touch drag for ordering
+    wrap.addEventListener('mousedown', e=>{ draggedEl=wrap; wrap.classList.add('dragging-order'); });
+    wrap.addEventListener('touchstart', e=>{ draggedEl=wrap; wrap.classList.add('dragging-order'); },{passive:true});
+    wrap.addEventListener('dragstart', e=>{ draggedEl=wrap; wrap.classList.add('dragging-order'); });
+    wrap.addEventListener('dragend',   e=>{ wrap.classList.remove('dragging-order'); checkOrder(); });
+    wrap.addEventListener('dragover',  e=>{ e.preventDefault(); wrap.classList.add('drag-over-order'); });
+    wrap.addEventListener('dragleave', e=>{ wrap.classList.remove('drag-over-order'); });
+    wrap.addEventListener('drop',      e=>{
+      e.preventDefault();
+      wrap.classList.remove('drag-over-order');
+      if (draggedEl && draggedEl !== wrap) {
+        const allWraps = [...oArea.children];
+        const iA = allWraps.indexOf(draggedEl);
+        const iB = allWraps.indexOf(wrap);
+        if (iA < iB) oArea.insertBefore(draggedEl, wrap.nextSibling);
+        else oArea.insertBefore(draggedEl, wrap);
+      }
+    });
+    return wrap;
+  }
+
+  nums.forEach(n => oArea.appendChild(buildJarEl(n)));
+  area.appendChild(oArea);
+
+  // Validate button
+  const valBtn = document.createElement('button');
+  valBtn.id = 'validate-btn'; valBtn.textContent = '✅ Validar orden';
+  valBtn.addEventListener('click', checkOrder);
+  area.appendChild(valBtn);
+
+  function checkOrder() {
+    if (levelPassed) return;
+    const current = [...oArea.children].map(el=>parseInt(el.dataset.num));
+    const sorted = [...current].sort((a,b)=>a-b);
+    if (JSON.stringify(current)===JSON.stringify(sorted)) {
+      [...oArea.children].forEach(el=>el.style.borderColor='var(--green)');
+      playLevelWin(); addScore(lvl.points); levelPassed=true;
+      launchConfetti();
+      showFeedback('¡Orden perfecto del 1 al 7! 🏆','success');
+      showNext();
+    } else {
+      playError();
+      showFeedback('Hay algo fuera de lugar... ¡inténtalo de nuevo! 🔄','error');
+    }
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   LEVEL 6 — COMPARE
+══════════════════════════════════════════════════════ */
+function renderCompare(lvl, area) {
+  let rounds = 0;
+  function nextRound() {
+    area.innerHTML = '';
+    let a = randInt(lvl.range[0], lvl.range[1]);
+    let b = randInt(lvl.range[0], lvl.range[1]);
+    while (a === b) b = randInt(lvl.range[0], lvl.range[1]);
+    const bigger = a > b ? 'left' : 'right';
+
+    const cArea = document.createElement('div');
+    cArea.id = 'compare-area';
+
+    function makeOption(count, side) {
+      const opt = document.createElement('div');
+      opt.className = 'compare-option';
+      const col = COLORS[Math.floor(Math.random()*COLORS.length)];
+      const fake = document.createElement('div');
+      fake.id = 'jars-row'; fake.style.cssText='display:flex;';
+      const wrap = document.createElement('div');
+      wrap.className = 'jar-wrap';
+      const jar = document.createElement('div');
+      jar.className = 'jar'; jar.style.minHeight='80px';
+      for (let i=0;i<count;i++) jar.appendChild(makeBall(col,'',false));
+      const countDiv = document.createElement('div');
+      countDiv.className = 'compare-count'; countDiv.textContent = count;
+      wrap.appendChild(jar); fake.appendChild(wrap);
+      opt.appendChild(fake); opt.appendChild(countDiv);
+
+      opt.addEventListener('click', ()=>{
+        if (side === bigger) {
+          opt.classList.add('correct'); playSuccess();
+          showFeedback(`¡Correcto! ${count} es mayor 🎉`,'success');
+          addScore(lvl.points/lvl.rounds); rounds++;
+          if (rounds >= lvl.rounds && !levelPassed) {
+            levelPassed=true;
+            setTimeout(()=>{ launchConfetti(); playLevelWin(); showNext(); }, 600);
+          } else if (rounds < lvl.rounds) {
+            setTimeout(()=>{ clearFeedback(); nextRound(); }, 800);
+          }
+        } else {
+          opt.classList.add('wrong'); playError();
+          showFeedback('Ese no es el mayor... ¡mira bien! 🤔','error');
+          setTimeout(()=>opt.classList.remove('wrong'),500);
+        }
+      });
+      return opt;
+    }
+
+    const left = makeOption(a, 'left');
+    const vs = document.createElement('div'); vs.className='vs-badge'; vs.textContent='VS';
+    const right = makeOption(b, 'right');
+    cArea.appendChild(left); cArea.appendChild(vs); cArea.appendChild(right);
+    area.appendChild(cArea);
+  }
+  nextRound();
+}
+
+/* ══════════════════════════════════════════════════════
+   LEVEL 7 — SEQUENCE
+══════════════════════════════════════════════════════ */
+function renderSequence(lvl, area) {
+  let rounds = 0; const maxR = 3;
+
+  function nextRound() {
+    area.innerHTML = '';
+    const start = randInt(lvl.range[0], lvl.range[1] - lvl.seqLen + 1);
+    const seq = Array.from({length: lvl.seqLen}, (_,i)=>start+i);
+    const missingIdx = Math.floor(Math.random()*lvl.seqLen);
+    const missingNum = seq[missingIdx];
+
+    const sRow = document.createElement('div');
+    sRow.id = 'sequence-row';
+    seq.forEach((n,i) => {
+      if (i > 0) { const arr=document.createElement('div'); arr.className='seq-arrow'; arr.textContent='→'; sRow.appendChild(arr); }
+      const box = document.createElement('div');
+      box.className = 'seq-num' + (i===missingIdx?' missing':'');
+      box.textContent = i===missingIdx ? '?' : n;
+      sRow.appendChild(box);
+    });
+    area.appendChild(sRow);
+
+    const choices = generateChoices(missingNum, lvl.range[0], lvl.range[1]+lvl.seqLen, 5);
+    const cRow = document.createElement('div');
+    cRow.id = 'choices-row';
+    choices.forEach(n=>{
+      const btn=document.createElement('button');
+      btn.className='choice-btn'; btn.textContent=n;
+      btn.addEventListener('click',()=>{
+        if (n===missingNum) {
+          btn.classList.add('correct'); playSuccess(); addScore(lvl.points/maxR);
+          showFeedback(`¡Sí! El número que falta es ${missingNum} 🎉`,'success');
+          rounds++;
+          if (rounds>=maxR&&!levelPassed){levelPassed=true;setTimeout(()=>{launchConfetti();playLevelWin();showNext();},600);}
+          else if(rounds<maxR) setTimeout(()=>{clearFeedback();nextRound();},800);
+        } else {
+          btn.classList.add('wrong'); playError();
+          showFeedback('Ese no va ahí... ¡piénsalo! 🤔','error');
+          setTimeout(()=>btn.classList.remove('wrong'),500);
+        }
+      });
+      cRow.appendChild(btn);
+    });
+    area.appendChild(cRow);
+  }
+  nextRound();
+}
+
+/* ══════════════════════════════════════════════════════
+   LEVEL 8 — ADDITION
+══════════════════════════════════════════════════════ */
+function renderAddition(lvl, area) {
+  let rounds = 0; const maxR = 3;
+
+  function nextRound() {
+    area.innerHTML = '';
+    const a = randInt(lvl.range[0], lvl.range[1]);
+    const b = randInt(lvl.range[0], lvl.range[1]);
+    const total = a + b;
+
+    const addArea = document.createElement('div');
+    addArea.id = 'addition-area';
+    const addJars = document.createElement('div');
+    addJars.id = 'addition-jars';
+
+    const colA = COLORS[Math.floor(Math.random()*COLORS.length)];
+    const colB = COLORS.filter(c=>c!==colA)[Math.floor(Math.random()*(COLORS.length-1))];
+
+    function makeAddJar(count, col) {
+      const wrap=document.createElement('div'); wrap.className='jar-wrap';
+      const lbl=document.createElement('div'); lbl.className='jar-label'; lbl.textContent=count;
+      const jar=document.createElement('div'); jar.className='jar'; jar.style.minHeight='80px';
+      for(let i=0;i<count;i++) jar.appendChild(makeBall(col,'',false));
+      wrap.appendChild(lbl); wrap.appendChild(jar);
+      return wrap;
+    }
+
+    addJars.appendChild(makeAddJar(a, colA));
+    const plus=document.createElement('div'); plus.className='add-symbol'; plus.textContent='+';
+    addJars.appendChild(plus);
+    addJars.appendChild(makeAddJar(b, colB));
+    const eq=document.createElement('div'); eq.className='add-symbol'; eq.textContent='=';
+    addJars.appendChild(eq);
+    const qmark=document.createElement('div');
+    qmark.style.cssText='font-size:2.5rem;font-weight:900;color:rgba(255,255,255,0.5);';
+    qmark.textContent='?';
+    addJars.appendChild(qmark);
+
+    addArea.appendChild(addJars);
+
+    const choices = generateChoices(total, 1, 10, lvl.choices);
+    const cRow=document.createElement('div'); cRow.id='choices-row';
+    choices.forEach(n=>{
+      const btn=document.createElement('button');
+      btn.className='choice-btn'; btn.textContent=n;
+      btn.addEventListener('click',()=>{
+        if(n===total){
+          btn.classList.add('correct'); playSuccess(); addScore(lvl.points/maxR);
+          showFeedback(`¡Correcto! ${a} + ${b} = ${total} 🎉`,'success');
+          rounds++;
+          if(rounds>=maxR&&!levelPassed){levelPassed=true;setTimeout(()=>{launchConfetti();playLevelWin();showNext();},600);}
+          else if(rounds<maxR) setTimeout(()=>{clearFeedback();nextRound();},900);
+        } else {
+          btn.classList.add('wrong'); playError();
+          showFeedback(`No... cuenta las bolitas de los dos frascos 🤔`,'error');
+          setTimeout(()=>btn.classList.remove('wrong'),500);
+        }
+      });
+      cRow.appendChild(btn);
+    });
+    addArea.appendChild(cRow);
+    area.appendChild(addArea);
+  }
+  nextRound();
+}
+
+/* ══════════════════════════════════════════════════════
+   LEVEL 9 — CLASSIFY (color + quantity)
+══════════════════════════════════════════════════════ */
+function renderClassify(lvl, area) {
+  const { colors, ballsPerColor } = lvl;
+  const state = {}; colors.forEach(c=>state[c]=0);
+  const needed = colors.length * ballsPerColor;
+  let placed = 0;
+
+  // Balls tray
+  const allBalls = [];
+  colors.forEach(c=>{ for(let i=0;i<ballsPerColor;i++) allBalls.push(c); });
+  shuffle(allBalls);
+  const tray=document.createElement('div'); tray.id='balls-tray';
+  allBalls.forEach(c=>{ const b=makeBall(c); b.dataset.color=c; tray.appendChild(b); });
+  area.appendChild(tray);
+
+  // Grid of jars with color + number label
+  const grid=document.createElement('div'); grid.id='classify-grid';
+  colors.forEach(c=>{
+    const wrap=document.createElement('div'); wrap.className='classify-jar-wrap';
+    const lbl=document.createElement('div'); lbl.className='classify-jar-label';
+    lbl.innerHTML=`<span style="color:${getColorHex(c)};font-size:0.9rem;font-weight:900;">${COLOR_NAMES[c]}</span><br/><span style="color:var(--yellow);">${ballsPerColor} bolitas</span>`;
+    const jar=document.createElement('div');
+    jar.className='jar'; jar.dataset.targetColor=c; jar.dataset.maxBalls=ballsPerColor;
+    wrap.appendChild(lbl); wrap.appendChild(jar);
+    grid.appendChild(wrap);
+  });
+  area.appendChild(grid);
+
+  window.handleDrop=function(jar,color,ballEl){
+    const target=jar.dataset.targetColor;
+    const max=parseInt(jar.dataset.maxBalls);
+    if(!target) return;
+    if(color===target && state[color]<max){
+      ballEl.remove();
+      jar.appendChild(makeBall(color,'',false));
+      state[color]++;
+      placed++;
+      jar.classList.add('correct'); setTimeout(()=>jar.classList.remove('correct'),500);
+      playSuccess(); addScore(Math.floor(lvl.points/needed));
+      showFeedback('¡Bien clasificado! 🌈','success');
+      if(placed>=needed&&!levelPassed){
+        levelPassed=true;
+        setTimeout(()=>{launchConfetti();playLevelWin();showFeedback('¡Clasificaste todo! 🏆','success');showNext();},400);
+      }
+    } else if(color!==target){
+      jar.classList.add('wrong'); setTimeout(()=>jar.classList.remove('wrong'),500);
+      ballEl.classList.remove('dragging'); playError();
+      showFeedback(`¡Esa bolita es ${COLOR_NAMES[color]}! 😅`,'error');
+    } else {
+      jar.classList.add('wrong'); setTimeout(()=>jar.classList.remove('wrong'),500);
+      ballEl.classList.remove('dragging'); playError();
+      showFeedback(`¡Ya tiene ${max}! 😄`,'error');
+    }
+  };
+}
+
+/* ══════════════════════════════════════════════════════
+   LEVEL 10 — MASTER
+══════════════════════════════════════════════════════ */
+function renderMaster(lvl, area) {
+  let rounds = 0;
+
+  function nextRound() {
+    area.innerHTML = '';
+    const count = randInt(lvl.range[0], lvl.range[1]);
+    const colors2 = shuffle([...COLORS]).slice(0, Math.min(count,7));
+
+    const mArea=document.createElement('div'); mArea.id='master-area';
+    const q=document.createElement('div'); q.id='master-question';
+    q.textContent='¿Cuántas bolitas ves en total?';
+    mArea.appendChild(q);
+
+    const disp=document.createElement('div'); disp.id='master-balls-display';
+    const balls=[];
+    for(let i=0;i<count;i++) balls.push(COLORS[Math.floor(Math.random()*COLORS.length)]);
+    shuffle(balls).forEach(c=>disp.appendChild(makeBall(c,'',false)));
+    mArea.appendChild(disp);
+
+    const row=document.createElement('div'); row.id='master-input-row';
+    const input=document.createElement('input');
+    input.type='number'; input.id='master-input'; input.min=1; input.max=10; input.placeholder='?';
+    const checkBtn=document.createElement('button');
+    checkBtn.id='master-check-btn'; checkBtn.textContent='✅ Listo';
+
+    checkBtn.addEventListener('click',()=>{
+      const val=parseInt(input.value);
+      if(val===count){
+        playSuccess(); addScore(lvl.points/lvl.rounds);
+        showFeedback(`¡Exacto! Hay ${count} bolitas 🎉`,'success');
+        rounds++;
+        input.value='';
+        if(rounds>=lvl.rounds&&!levelPassed){
+          levelPassed=true;
+          setTimeout(()=>{launchConfetti();playLevelWin();showFeedback('¡Eres un Maestro Numerador! 👑','success');showNext();},600);
+        } else if(rounds<lvl.rounds) setTimeout(()=>{clearFeedback();nextRound();},800);
+      } else {
+        playError();
+        showFeedback('¡Cuenta de nuevo con cuidado! 🤔','error');
+        input.style.border='2px solid var(--red)';
+        setTimeout(()=>input.style.border='',500);
+      }
+    });
+    input.addEventListener('keydown',e=>{ if(e.key==='Enter') checkBtn.click(); });
+    row.appendChild(input); row.appendChild(checkBtn);
+    mArea.appendChild(row);
+    area.appendChild(mArea);
+  }
+  nextRound();
+}
+
+/* ══════════════════════════════════════════════════════
+   LEVEL NAVIGATION
+══════════════════════════════════════════════════════ */
+function nextLevel() {
+  if (currentLevel < 10) {
+    currentLevel++;
+    renderLevel();
+  } else {
+    showWinScreen();
+  }
+}
+function showWinScreen() {
+  document.getElementById('win-overlay').classList.add('active');
+  launchConfetti();
+  playLevelWin();
+  document.getElementById('score-val').textContent = score;
+}
+function restartGame() {
+  currentLevel = 1; score = 0;
+  document.getElementById('score-val').textContent = 0;
+  document.getElementById('win-overlay').classList.remove('active');
+  renderLevel();
+}
+
+/* ══════════════════════════════════════════════════════
+   UTILITIES
+══════════════════════════════════════════════════════ */
+function randInt(min, max) { return Math.floor(Math.random()*(max-min+1))+min; }
+function shuffle(arr) {
+  for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; }
+  return arr;
+}
+function generateChoices(correct, min, max, count) {
+  const set = new Set([correct]);
+  let tries = 0;
+  while (set.size < count && tries < 100) {
+    let n = randInt(Math.max(min, correct-4), Math.min(max, correct+4));
+    set.add(n); tries++;
+  }
+  // fallback
+  let n = min;
+  while (set.size < count) { set.add(n++); }
+  return shuffle([...set]).slice(0, count);
+}
+function getColorHex(color) {
+  const map = {
+    red:'#FF5757', blue:'#5BC8F5', yellow:'#FFD93D',
+    green:'#6BCB77', pink:'#FF6FB4', orange:'#FF9A3C', purple:'#B47AEA'
+  };
+  return map[color] || '#FFFFFF';
+}
+
+/* ══════════════════════════════════════════════════════
+   INIT
+══════════════════════════════════════════════════════ */
+window.addEventListener('DOMContentLoaded', ()=>{
+  initBubbles();
+  renderLevel();
+});
+</script>
+</body>
+</html>
